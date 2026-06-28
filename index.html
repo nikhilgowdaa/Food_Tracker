@@ -1,107 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Nutrition Pro v2.0</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="app-container">
-    
-    <!-- Top Section: Liver Score -->
-    <header class="dashboard-header glass">
-      <h1>Dashboard</h1>
-      <div class="liver-score-container">
-        <svg class="progress-ring" width="120" height="120">
-          <circle class="progress-ring__circle" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
-        </svg>
-        <div class="score-text">
-          <span id="liverScoreValue">100</span>
-          <span class="score-label">Liver Score</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Day Selector -->
-    <section class="day-selector">
-      <h2 class="section-title">Today's Protocol</h2>
-      <div class="glass card protocol-card">
-        <p id="currentDay">Wednesday</p>
-        <p id="dietType" class="highlight">Non-Vegetarian (Chicken Allowed)</p>
-      </div>
-    </section>
-
-    <!-- Macro Dashboard -->
-    <section class="macros-grid">
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Calories</span>
-          <span id="calValue">0 / 2000</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="calFill"></div></div>
-      </div>
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Protein</span>
-          <span id="proteinValue">0 / 140g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="proteinFill"></div></div>
-      </div>
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Carbs</span>
-          <span id="carbsValue">0 / 170g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="carbsFill"></div></div>
-      </div>
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Fat</span>
-          <span id="fatValue">0 / 55g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="fatFill"></div></div>
-      </div>
-    </section>
-
-    <!-- Smart Nutrition Engine Notifications -->
-    <section class="smart-engine">
-      <div class="glass card notification-card">
-        <div class="icon">💡</div>
-        <div class="notification-text" id="engineNotification">
-          Good morning! Stick to eggs or whey for breakfast to hit your 140g protein target efficiently.
-        </div>
-      </div>
-    </section>
-
-    <!-- Activities & Habits -->
+<!-- Activities & Habits -->
     <section class="activities">
       <h2 class="section-title">Log Activities</h2>
       <div class="activities-grid">
-        <button class="glass btn-activity" onclick="logActivity('gym')">🏋️ Gym (+10)</button>
-        <button class="glass btn-activity" onclick="logActivity('football')">⚽ Football (+10)</button>
-        <button class="glass btn-activity" onclick="logActivity('water')">💧 Water Target (+10)</button>
-        <button class="glass btn-activity danger" onclick="logActivity('sugar')">🍩 Sugary Food (-15)</button>
+        <button class="glass btn-activity" data-activity="gym">🏋️ Gym (+10)</button>
+        <button class="glass btn-activity" data-activity="football">⚽ Football (+10)</button>
+        <button class="glass btn-activity" data-activity="water">💧 Water Target (+10)</button>
+        <button class="glass btn-activity danger" data-activity="sugar">🍩 Sugary Food (-15)</button>
       </div>
     </section>
 
-    <!-- Quick Meal Logger (Simplified for prototype) -->
+    <!-- Breakfast Builder -->
     <section class="meal-logger">
-      <h2 class="section-title">Quick Log</h2>
+      <h2 class="section-title">Breakfast Builder</h2>
       <div class="glass card meal-card">
-        <select id="foodSelect" class="apple-select">
-          <option value="idli">Idli (2 pieces)</option>
-          <option value="chicken_breast">Chicken Breast (150g)</option>
-          <option value="broccoli">Broccoli (100g)</option>
+        <select id="breakfastSelect" class="apple-select">
+          <option value="idli">Idli (per piece)</option>
+          <option value="dosa">Plain Dosa (1 medium)</option>
+          <option value="set_dosa">Set Dosa (1 set of 3)</option>
+          <option value="rava_dosa">Rava Dosa (1 medium)</option>
+          <option value="poha">Poha (1 medium bowl)</option>
+          <option value="upma">Upma (1 medium bowl)</option>
+          <option value="oats">Oats (1 medium bowl)</option>
+          <option value="brown_bread">Brown Bread (2 slices)</option>
+          <option value="eggs">Boiled Eggs (1 egg)</option>
           <option value="whey">Whey Protein (1 scoop)</option>
         </select>
-        <button class="btn-primary" onclick="logMeal()">Add Meal</button>
+        
+        <div class="quantity-row">
+          <label for="breakfastQty">Quantity:</label>
+          <input type="number" id="breakfastQty" class="apple-input" value="1" min="1" max="10">
+        </div>
+
+        <button class="btn-primary" id="logBreakfastBtn">Log Breakfast</button>
       </div>
     </section>
 
-  </div>
-  <script src="script.js"></script>
-</body>
-</html>
+    <!-- Toast Notification Container -->
+    <div id="toast" class="toast hidden">Activity Logged!</div>
