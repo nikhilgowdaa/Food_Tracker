@@ -1,47 +1,357 @@
-/* Quantity Input */
-.quantity-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  padding: 0 5px;
+:root {
+  --bg-color: #f2f2f7;
+  --text-color: #1c1c1e;
+  --text-secondary: #8e8e93;
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --ring-bg: rgba(0, 0, 0, 0.05);
+  --primary-color: #007aff;
+  --green: #34c759;
+  --yellow: #ffcc00;
+  --red: #ff3b30;
 }
 
-.quantity-row label {
-  font-size: 16px;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --text-secondary: #aeaea3;
+    --card-bg: rgba(28, 28, 30, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --ring-bg: rgba(255, 255, 255, 0.05);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 16px;
+  padding-bottom: 60px;
+  line-height: 1.4;
+}
+
+.app-container {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Glassmorphic Cards */
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+.card {
+  padding: 20px;
+}
+
+/* Dashboard & Header Styling */
+.dashboard-header {
+  padding: 20px;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.protocol-badge {
+  background: rgba(0, 122, 255, 0.15);
+  color: var(--primary-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.liver-score-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__bg {
+  stroke: var(--ring-bg);
+}
+
+.progress-ring__circle {
+  stroke: var(--green);
+  stroke-linecap: round;
+  stroke-dasharray: 364.4; /* 2 * pi * 58 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.25, 1, 0.5, 1), stroke 0.4s ease;
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#liverScoreValue {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.score-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.day-info h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Notifications Box */
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(0, 122, 255, 0.08);
+  border-color: rgba(0, 122, 255, 0.15);
+  padding: 14px 18px;
+}
+
+.notification-card .icon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.notification-text {
+  font-size: 14px;
   font-weight: 500;
 }
 
-.apple-input {
-  width: 80px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--glass-border);
-  background: var(--card-bg);
-  color: var(--text-color);
-  font-size: 16px;
-  text-align: center;
+/* Macros Grid Layout */
+.macros-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-/* Toast Notification */
+.macro-card {
+  padding: 14px;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.macro-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 7px;
+  background: var(--ring-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: var(--primary-color);
+  width: 0%;
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Form Controls & Action Elements */
+.section-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-spacing: 0.5px;
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-activity {
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
+  border-radius: 14px;
+}
+
+.btn-activity.danger {
+  color: var(--red);
+}
+
+.meal-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.input-group {
+  margin-top: 15px;
+}
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.apple-select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 500;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'><polyline points='4 6 8 10 12 6'></polyline></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+/* Custom Stepper Object */
+.quantity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.quantity-row label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-color);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.step-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+  font-weight: 400;
+  background: transparent;
+  color: var(--primary-color);
+}
+
+.apple-input {
+  width: 40px;
+  height: 44px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Heavy Primary Button */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+}
+
+button:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+/* iOS Toast Notification system */
 .toast {
   position: fixed;
-  bottom: 30px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--text-color);
-  color: var(--bg-color);
+  background: #1c1c1e;
+  color: #ffffff;
   padding: 12px 24px;
-  border-radius: 20px;
-  font-weight: 600;
+  border-radius: 24px;
+  font-weight: 500;
   font-size: 14px;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-  z-index: 1000;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .toast.hidden {
   opacity: 0;
+  transform: translate(-50%, 10px);
   pointer-events: none;
 }
