@@ -160,21 +160,68 @@ const App = {
   renderMacros(t, p) {
     const grid = document.getElementById('macroGrid');
     const items = [
-      { name: 'Calories', cur: t.cal, tgt: p.targetCalories, u: 'kcal', c: '#0a84ff' },
-      { name: 'Protein', cur: t.p, tgt: p.targetProtein, u: 'g', c: '#34c759' },
-      { name: 'Carbs', cur: t.c, tgt: p.targetCarbs, u: 'g', c: '#ff9f0a' },
-      { name: 'Fat', cur: t.f, tgt: p.targetFat, u: 'g', c: '#ff375f' },
-      { name: 'Fiber', cur: t.fiber, tgt: p.targetFiber, u: 'g', c: '#30d158' },
+      { name: 'Calories', k: 'cal',   cur: t.cal,   tgt: p.targetCalories, u: 'kcal', c: '#0a84ff' },
+      { name: 'Protein',  k: 'p',     cur: t.p,     tgt: p.targetProtein,  u: 'g',    c: '#34c759' },
+      { name: 'Carbs',    k: 'c',     cur: t.c,     tgt: p.targetCarbs,    u: 'g',    c: '#ff9f0a' },
+      { name: 'Fat',      k: 'f',     cur: t.f,     tgt: p.targetFat,      u: 'g',    c: '#ff375f' },
+      { name: 'Fiber',    k: 'fiber', cur: t.fiber, tgt: p.targetFiber,    u: 'g',    c: '#30d158' },
     ];
     grid.innerHTML = items.map(m => {
       const pct = Math.min(100, m.cur / m.tgt * 100);
       const cls = m.cur > m.tgt * 1.05 ? 'over' : (m.cur >= m.tgt ? 'met' : '');
-      return `<div class="macro glass">
-        <div class="m-top"><span class="m-name">${m.name}</span></div>
+      return `<div class="macro glass" data-macro="${m.k}">
+        <div class="m-top"><span class="m-name">${m.name}</span><span class="m-chev">›</span></div>
         <div class="m-val">${Math.round(m.cur)} <small>/ ${m.tgt} ${m.u}</small></div>
         <div class="progress"><div class="progress-fill ${cls}" style="width:${pct}%;${cls ? '' : 'background:' + m.c}"></div></div>
       </div>`;
     }).join('');
+    grid.querySelectorAll('.macro').forEach(el =>
+      el.addEventListener('click', () => this.showMacroBreakdown(el.dataset.macro)));
+  },
+
+  /* Drill-down breakdown for a macro card.
+     Calories → grouped by meal; other macros → per-food contribution, sorted. */
+  showMacroBreakdown(key) {
+    const labels = { cal: 'Calories', p: 'Protein', c: 'Carbs', f: 'Fat', fiber: 'Fiber' };
+    const unit = key === 'cal' ? 'kcal' : 'g';
+    const day = this.day;
+    const p = Storage.getProfile();
+    const tgt = { cal: p.targetCalories, p: p.targetProtein, c: p.targetCarbs, f: p.targetFat, fiber: p.targetFiber }[key];
+    const slots = [['breakfast', 'Breakfast'], ['protein', 'Protein'], ['lunch', 'Lunch'], ['snacks', 'Snacks'], ['dinner', 'Dinner']];
+    let total = 0;
+    let body = '';
+
+    if (key === 'cal') {
+      slots.forEach(([slot, name]) => {
+        const items = day.meals[slot] || [];
+        if (!items.length) return;
+        let sub = 0;
+        const rows = items.map(i => {
+          const f = getFood(i.id); const v = f.cal * i.qty; sub += v;
+          return `<div class="breakdown-item"><span>${f.name} <small class="bd-q">${this.qtyLabel(f, i.qty)}</small></span><span>${Math.round(v)} ${unit}</span></div>`;
+        }).join('');
+        total += sub;
+        body += `<div class="bd-group"><div class="bd-head"><span>${name}</span><span>${Math.round(sub)} ${unit}</span></div>${rows}</div>`;
+      });
+    } else {
+      const contribs = [];
+      slots.forEach(([slot, name]) => (day.meals[slot] || []).forEach(i => {
+        const f = getFood(i.id); const v = f[key] * i.qty;
+        if (v > 0) { contribs.push({ f, qty: i.qty, v, meal: name }); total += v; }
+      }));
+      contribs.sort((a, b) => b.v - a.v);
+      body = contribs.map(ct => {
+        const pct = total > 0 ? Math.round(ct.v / total * 100) : 0;
+        return `<div class="breakdown-item">
+          <span>${ct.f.name} <small class="bd-q">${this.qtyLabel(ct.f, ct.qty)} · ${ct.meal}</small></span>
+          <span>${Math.round(ct.v * 10) / 10} ${unit} <small class="bd-q">${pct}%</small></span>
+        </div>`;
+      }).join('');
+    }
+
+    if (!total) body = '<p class="empty-note">No foods logged yet for this day.</p>';
+    const header = `<div class="breakdown-item bd-total"><span>Total</span><span>${Math.round(total)} / ${tgt} ${unit}</span></div>`;
+    this.openModal(labels[key] + ' breakdown', header + body);
   },
 
   renderCoach(list) {

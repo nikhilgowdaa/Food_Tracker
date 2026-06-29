@@ -166,8 +166,11 @@ body {
 /* ---------- Macro grid ---------- */
 .macro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
 .macro {
-  border-radius: 18px; padding: 14px; box-shadow: var(--shadow);
+  border-radius: 18px; padding: 14px; box-shadow: var(--shadow); cursor: pointer;
+  transition: transform .12s;
 }
+.macro:active { transform: scale(0.97); }
+.macro .m-chev { color: var(--text-sub); font-weight: 700; font-size: 16px; opacity: .5; }
 .macro .m-top { display: flex; justify-content: space-between; align-items: baseline; }
 .macro .m-name { font-size: 13px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: .4px; }
 .macro .m-val { font-size: 19px; font-weight: 800; margin: 6px 0 8px; }
@@ -375,9 +378,13 @@ body {
 .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .modal-head h3 { margin: 0; font-size: 20px; }
 .modal-body { font-size: 15px; line-height: 1.5; }
-.modal-body .breakdown-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--ring-track); }
+.modal-body .breakdown-item { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--ring-track); }
 .modal-body .breakdown-item .pos { color: var(--green); font-weight: 700; }
 .modal-body .breakdown-item .neg { color: var(--red); font-weight: 700; }
+.modal-body .bd-q { color: var(--text-sub); font-weight: 500; }
+.modal-body .bd-group { margin-bottom: 14px; }
+.modal-body .bd-head { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; color: var(--text-sub); text-transform: uppercase; letter-spacing: .5px; padding: 8px 0 4px; }
+.modal-body .bd-total { font-weight: 800; font-size: 16px; border-bottom: 2px solid var(--ring-track); margin-bottom: 8px; }
 
 /* ---------- Toast ---------- */
 .toast {
