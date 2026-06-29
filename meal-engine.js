@@ -123,8 +123,6 @@ const Engine = {
     // Positive
     if (day.gym && day.gym.done) add('Gym workout', +10);
     if (day.football && day.football.done) add('Football session', +10);
-    if (day.water >= profile.waterGoal) add('Water goal reached', +10);
-    else if (day.water >= profile.waterGoal * 0.7) add('Good hydration', +5);
 
     // broccoli / vegetables eaten?
     const allItems = Object.values(day.meals).flat();
@@ -199,11 +197,6 @@ const Engine = {
       out.push({ type: 'warn', text: 'Fiber is low. Add broccoli or green peas for liver health.' });
     } else if (totals.fiber >= profile.targetFiber) {
       out.push({ type: 'good', text: 'Great fiber intake — your liver thanks you. 🥦' });
-    }
-    // Water
-    if (day.water < profile.waterGoal) {
-      const left = profile.waterGoal - day.water;
-      out.push({ type: 'info', text: `Drink another ${left >= 500 ? '500 ml' : left + ' ml'} of water (${day.water}/${profile.waterGoal} ml).` });
     }
     // Liver negatives
     const allItems = Object.values(day.meals).flat();

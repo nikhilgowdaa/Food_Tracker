@@ -13,14 +13,17 @@ const Charts = {
 
   _prep(canvas) {
     const ratio = window.devicePixelRatio || 1;
+    // Cache the logical height ONCE — we mutate canvas.height below (×ratio),
+    // so re-reading the attribute on later renders would compound the size.
+    if (canvas._logicalH == null) canvas._logicalH = parseInt(canvas.getAttribute('height')) || 180;
+    const h = canvas._logicalH;
     const rect = canvas.getBoundingClientRect();
-    const w = rect.width || canvas.clientWidth || 320;
-    const h = parseInt(canvas.getAttribute('height')) || 180;
+    const w = Math.round(rect.width) || canvas.clientWidth || 320;
     canvas.width = w * ratio;
     canvas.height = h * ratio;
     canvas.style.height = h + 'px';
     const ctx = canvas.getContext('2d');
-    ctx.scale(ratio, ratio);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     return { ctx, w, h };
   },
 
@@ -28,11 +31,11 @@ const Charts = {
   ring(canvas, value, max, color, label, sub) {
     const { ctx, w, h } = this._prep(canvas);
     ctx.clearRect(0, 0, w, h);
-    const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 12;
+    const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 8;
     const pct = Math.max(0, Math.min(1, value / max));
     const track = this._css('--ring-track', 'rgba(120,120,128,0.18)');
     // track
-    ctx.lineWidth = 12;
+    ctx.lineWidth = Math.max(6, Math.round(r * 0.26));
     ctx.lineCap = 'round';
     ctx.strokeStyle = track;
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();

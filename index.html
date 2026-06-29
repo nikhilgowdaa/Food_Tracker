@@ -41,32 +41,18 @@
           <button id="dietOverride" class="mini-btn">Override</button>
         </div>
 
-        <!-- Liver score ring -->
+        <!-- Liver score ring (compact) -->
         <div class="card glass score-card">
-          <canvas id="scoreRing" class="score-ring" height="200"></canvas>
+          <canvas id="scoreRing" class="score-ring" height="76"></canvas>
           <div class="score-meta">
             <h2>Liver Score</h2>
             <p id="scoreVerdict" class="score-verdict"></p>
-            <button id="scoreWhy" class="mini-btn">Why?</button>
           </div>
+          <button id="scoreWhy" class="mini-btn score-why">Why?</button>
         </div>
 
         <!-- Macro cards -->
         <div class="macro-grid" id="macroGrid"></div>
-
-        <!-- Water tracker -->
-        <div class="card glass water-card">
-          <div class="water-head">
-            <span>💧 Water</span>
-            <span id="waterLabel"></span>
-          </div>
-          <div class="progress"><div class="progress-fill" id="waterFill"></div></div>
-          <div class="water-btns">
-            <button class="chip" data-water="250">+250</button>
-            <button class="chip" data-water="500">+500</button>
-            <button class="chip" data-water="-250">−250</button>
-          </div>
-        </div>
 
         <!-- Activity toggles -->
         <div class="card glass">

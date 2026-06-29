@@ -8,6 +8,7 @@ const App = {
   activeView: 'today',
   activeMeal: 'breakfast',
   statRange: 'week',
+  searchTerm: '',
 
   /* ---------- Init ---------- */
   init() {
@@ -38,14 +39,6 @@ const App = {
 
     document.getElementById('modalClose').addEventListener('click', () => this.closeModal());
     document.getElementById('modalBackdrop').addEventListener('click', () => this.closeModal());
-
-    // water buttons
-    document.querySelectorAll('[data-water]').forEach(b =>
-      b.addEventListener('click', () => {
-        const d = this.day;
-        d.water = Math.max(0, d.water + parseInt(b.dataset.water));
-        this.saveDay(); this.refresh();
-      }));
 
     // activity toggles
     document.getElementById('gymToggle').addEventListener('change', e => {
@@ -136,25 +129,18 @@ const App = {
     badge.textContent = this.diet === 'veg' ? '🥗 Vegetarian Day' : '🍗 Non-Veg Day';
     badge.className = 'diet-badge ' + this.diet;
 
-    // score ring
+    // score ring (compact)
     const { score } = Engine.liverScore(d, p);
     const color = ({ green: '#34c759', yellow: '#ff9f0a', red: '#ff3b30' })[Engine.scoreColor(score)];
-    Charts.ring(document.getElementById('scoreRing'), score, 100, color, String(score), '/ 100');
+    Charts.ring(document.getElementById('scoreRing'), score, 100, color, String(score), null);
     document.getElementById('scoreVerdict').textContent =
-      score >= 80 ? 'Liver-friendly day. Keep it up!' :
-      score >= 55 ? 'Decent — a few tweaks will boost it.' :
-                    'Needs attention. Check the breakdown.';
+      score >= 80 ? `${score}/100 · Liver-friendly day. Keep it up!` :
+      score >= 55 ? `${score}/100 · Decent — a few tweaks will boost it.` :
+                    `${score}/100 · Needs attention. Tap Why?`;
 
     // macros
     const totals = Engine.dayTotals(d);
     this.renderMacros(totals, p);
-
-    // water
-    const wpct = Math.min(100, d.water / p.waterGoal * 100);
-    const wfill = document.getElementById('waterFill');
-    wfill.style.width = wpct + '%';
-    wfill.className = 'progress-fill' + (d.water >= p.waterGoal ? ' met' : '');
-    document.getElementById('waterLabel').textContent = `${d.water} / ${p.waterGoal} ml`;
 
     // activity
     document.getElementById('gymToggle').checked = d.gym.done;
@@ -234,89 +220,165 @@ const App = {
     seg.innerHTML = meals.map(m =>
       `<button data-meal="${m.id}" class="${m.id === this.activeMeal ? 'active' : ''}">${m.label}</button>`).join('');
     seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-      this.activeMeal = b.dataset.meal; this.renderLog();
+      this.activeMeal = b.dataset.meal; this.searchTerm = ''; this.renderLog();
     }));
     const area = document.getElementById('builderArea');
     if (this.activeMeal === 'dinner') area.innerHTML = '', this.renderDinner(area);
     else this.renderBuilder(area, this.activeMeal);
   },
 
-  /* Generic builder for a meal slot using option lists */
-  renderBuilder(area, slot) {
-    let groups = [];
-    if (slot === 'breakfast') {
-      groups = [{ title: 'Breakfast', ids: BREAKFAST_OPTIONS, rec: { idli: 2, dosa: 2, oats: 1 } }];
-    } else if (slot === 'protein') {
+  /* Default option groups per meal slot */
+  builderGroups(slot) {
+    if (slot === 'breakfast') return [{ title: 'Breakfast', ids: BREAKFAST_OPTIONS }];
+    if (slot === 'protein') {
       const ids = this.diet === 'veg' ? PROTEIN_VEG : PROTEIN_NONVEG;
-      groups = [{ title: this.diet === 'veg' ? 'Vegetarian Protein' : 'Non-Veg Protein', ids }];
-    } else if (slot === 'lunch') {
+      return [{ title: this.diet === 'veg' ? 'Vegetarian Protein' : 'Non-Veg Protein', ids }];
+    }
+    if (slot === 'lunch') {
       const protIds = this.diet === 'veg' ? ['paneer'] : ['chicken_br', 'paneer'];
-      groups = [
+      const curryIds = this.diet === 'veg' ? CURRY_VEG : CURRY_VEG.concat(CURRY_NONVEG);
+      return [
         { title: 'Protein', ids: protIds },
+        { title: 'Curries', ids: curryIds },
         { title: 'Carbs', ids: LUNCH_CARB },
         { title: 'Vegetables', ids: VEG_OPTIONS },
       ];
-    } else if (slot === 'snacks') {
-      const ids = SNACK_OPTIONS.filter(id => !(this.diet === 'veg' && false)); // all allowed
-      groups = [{ title: 'Evening Snacks', ids }];
     }
+    if (slot === 'snacks') {
+      return [
+        { title: 'Fruits', ids: SNACK_FRUITS },
+        { title: 'Nuts & Dry Fruits', ids: SNACK_NUTS },
+        { title: 'Drinks', ids: SNACK_DRINKS },
+        { title: 'Other', ids: SNACK_OTHER },
+      ];
+    }
+    return [];
+  },
 
+  /* Recommended starting quantity for a food */
+  recQty(f) {
+    const map = {
+      idli: 3, mini_idli: 6, dosa: 2, masala_dosa: 1, set_dosa: 3, rava_dosa: 2, neer_dosa: 4,
+      poha: 1, upma: 1, pongal: 1, chapati_bf: 2, brown_bread: 2, white_bread: 2, oats: 1,
+      idiyappam: 3, appam: 2, uttapam: 2, paratha: 2, methi_thepla: 2, ragi_dosa: 2, moong_chilla: 2,
+      chapati: 2, phulka: 2, rice: 1.5, brown_rice: 1.5, jeera_rice: 1.5, quinoa: 1.5, millet: 1.5,
+      chicken_br: 1.5, grilled_chk: 1.5, paneer: 1, tofu: 1, milk: 1, whey: 1,
+      boiled_egg: 2, egg: 2, egg_white: 3, dal: 1, fish: 1, salmon: 1,
+    };
+    if (map[f.id] != null) return map[f.id];
+    if (f.cat === 'fat') return 2;
+    return 1;
+  },
+
+  /* foods measured per 100 g use gram-multiple buttons */
+  isGram100(f) { return f.unit.indexOf('100 g') === 0; },
+
+  foodCardHTML(f, slot, selMap) {
+    const sel = selMap[f.id];
+    const rec = this.recQty(f);
+    return `<div class="food-card ${sel ? 'selected' : ''}" data-card="${f.id}" data-slot="${slot}">
+      <span class="liver-dot ${f.liver}"></span>
+      <div class="fc-name">${f.name}</div>
+      <div class="fc-macros">${Math.round(f.cal)} kcal · P ${f.p} · C ${f.c} · F ${f.f}<br>Fiber ${f.fiber} · per ${f.unit}</div>
+      <div class="fc-rec">${sel ? '✓ Eaten: ' + this.qtyLabel(f, sel) : 'Tap to add · rec ' + this.qtyLabel(f, rec)}</div>
+      <div class="qty-row" data-qtyrow="${f.id}">${this.qtyButtons(f, sel)}</div>
+    </div>`;
+  },
+
+  qtyButtons(f, current) {
+    const rec = this.recQty(f);
+    let opts;
+    if (this.isGram100(f)) {
+      const base = f.id === 'paneer' ? [0.5, 1, 1.5, 2] : [1, 1.5, 2, 2.5];
+      opts = base.map(q => ({ q, label: Math.round(q * 100) + 'g' }));
+    } else {
+      opts = [1, 2, 3, 4].map(q => ({ q, label: String(q) }));
+    }
+    if (!opts.some(o => o.q === rec)) {
+      opts.unshift({ q: rec, label: this.isGram100(f) ? Math.round(rec * 100) + 'g' : String(rec) });
+    }
+    let h = current ? `<button class="qty-btn clear" data-qty="0" aria-label="Remove">✕</button>` : '';
+    h += opts.map(o => {
+      const isOn = current === o.q;
+      const isRec = !current && o.q === rec;
+      return `<button class="qty-btn ${isOn ? 'on' : ''} ${isRec ? 'rec' : ''}" data-qty="${o.q}">${o.label}</button>`;
+    }).join('');
+    return h;
+  },
+
+  renderBuilder(area, slot) {
     const day = this.day;
     const selMap = {};
     (day.meals[slot] || []).forEach(i => selMap[i.id] = i.qty);
 
-    let html = '';
-    groups.forEach(g => {
-      html += `<div class="section-title">${g.title}</div><div class="food-grid">`;
-      g.ids.forEach(id => {
-        const f = getFood(id); if (!f) return;
-        const sel = selMap[id];
-        const rec = g.rec && g.rec[id];
-        const isUnitCount = ['piece','egg','slice','medium','cup','glass','scoop (30g)','tbsp','tsp','can','3 pcs','20 g','30 g','50 g dry','bowl (40g)'].includes(f.unit) || true;
-        html += `<div class="food-card ${sel ? 'selected' : ''}" data-id="${id}" data-slot="${slot}">
-          <span class="liver-dot ${f.liver}"></span>
-          <div class="fc-name">${f.name}</div>
-          <div class="fc-macros">${Math.round(f.cal)} kcal · P ${f.p} · C ${f.c} · F ${f.f}<br>Fiber ${f.fiber} · per ${f.unit}</div>
-          ${rec ? `<div class="fc-rec">Recommended: ${rec}</div>` : ''}
-          <div class="qty-row" data-qtyrow="${id}">${this.qtyButtons(f, sel)}</div>
-        </div>`;
-      });
-      html += `</div>`;
-    });
+    const raw = this.searchTerm || '';
+    const term = raw.trim();
+    const termLower = term.toLowerCase();
 
-    // summary
+    let html = `<div class="search-wrap">
+      <span class="search-ic">🔍</span>
+      <input id="foodSearch" class="food-search" type="search" inputmode="search" placeholder="Search any food…" value="${this.escapeAttr(raw)}" autocomplete="off" autocapitalize="none" />
+      ${term ? '<button id="searchClear" class="search-clear" aria-label="Clear">✕</button>' : ''}
+    </div>`;
+
+    if (term) {
+      let results = FOOD_DB.filter(f => f.name.toLowerCase().includes(termLower));
+      if (this.diet === 'veg') results = results.filter(f => !(f.tags || []).includes('nonveg'));
+      html += `<div class="section-title">Results (${results.length})</div>`;
+      html += results.length
+        ? `<div class="food-grid">${results.slice(0, 60).map(f => this.foodCardHTML(f, slot, selMap)).join('')}</div>`
+        : `<p class="empty-note">No food matches “${this.escapeHtml(term)}”.</p>`;
+    } else {
+      this.builderGroups(slot).forEach(g => {
+        html += `<div class="section-title">${g.title}</div><div class="food-grid">`;
+        g.ids.forEach(id => { const f = getFood(id); if (f) html += this.foodCardHTML(f, slot, selMap); });
+        html += `</div>`;
+      });
+    }
+
     const t = Engine.mealTotals(day.meals[slot]);
-    html += `<div class="sel-summary">This meal: ${Math.round(t.cal)} kcal · ${Math.round(t.p)}g protein · ${Math.round(t.c)}g carbs · ${Math.round(t.fiber)}g fiber</div>`;
+    const n = (day.meals[slot] || []).length;
+    html += `<div class="sel-summary">This meal: ${Math.round(t.cal)} kcal · ${Math.round(t.p)}g protein · ${Math.round(t.c)}g carbs · ${Math.round(t.fiber)}g fiber${n ? ' · ' + n + ' item' + (n > 1 ? 's' : '') : ''}</div>`;
 
     area.innerHTML = html;
+
+    // search field
+    const search = area.querySelector('#foodSearch');
+    if (search) {
+      search.addEventListener('input', e => {
+        this.searchTerm = e.target.value;
+        const pos = e.target.selectionStart;
+        this.renderBuilder(area, slot);
+        const again = area.querySelector('#foodSearch');
+        if (again) { again.focus(); try { again.setSelectionRange(pos, pos); } catch (_) {} }
+      });
+    }
+    const clr = area.querySelector('#searchClear');
+    if (clr) clr.addEventListener('click', () => { this.searchTerm = ''; this.renderBuilder(area, slot); });
+
+    // tap card body → add at recommended quantity
+    area.querySelectorAll('.food-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.card;
+        if (selMap[id]) return;                 // already added: adjust via qty buttons
+        this.setMealItem(slot, id, this.recQty(getFood(id)));
+        this.renderBuilder(area, slot);
+      });
+    });
+
+    // qty buttons → set actual consumed quantity
     area.querySelectorAll('.qty-btn').forEach(btn => {
       btn.addEventListener('click', e => {
         e.stopPropagation();
         const id = btn.closest('[data-qtyrow]').dataset.qtyrow;
-        const qty = +btn.dataset.qty;
-        this.setMealItem(slot, id, qty);
+        this.setMealItem(slot, id, +btn.dataset.qty);
         this.renderBuilder(area, slot);
       });
     });
   },
 
-  qtyButtons(f, current) {
-    // quantity options scaled by step
-    const opts = [];
-    if (['rice','brown_rice','chicken_br','grilled_chk','paneer','jeera_rice'].includes(f.id)) {
-      // gram-based: show g multiples
-      const base = f.id.includes('chicken') ? [1,1.5,2,2.5] : (f.id === 'paneer' ? [0.5,1,1.5,2] : [1,1.5,2,2.5]);
-      base.forEach(q => opts.push({ q, label: Math.round(q*100)+'g' }));
-    } else {
-      [1,2,3,4].forEach(q => opts.push({ q, label: String(q) }));
-    }
-    let h = `<button class="qty-btn ${!current ? '' : ''}" data-qty="0" ${!current?'style="opacity:.5"':''}>0</button>`;
-    h = '';
-    opts.forEach(o => {
-      h += `<button class="qty-btn ${current === o.q ? 'on' : ''}" data-qty="${o.q}">${o.label}</button>`;
-    });
-    return h;
-  },
+  escapeAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); },
+  escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); },
 
   setMealItem(slot, id, qty) {
     const day = this.day;
@@ -360,7 +422,7 @@ const App = {
   },
 
   qtyLabel(f, qty) {
-    if (['chicken_br','grilled_chk','paneer','rice','brown_rice'].includes(f.id)) return Math.round(qty*100)+' g';
+    if (f.unit.indexOf('100 g') === 0) return Math.round(qty * 100) + ' g';
     return qty + ' × ' + f.unit;
   },
 
@@ -384,7 +446,6 @@ const App = {
     const cal = seriesOf(d => Math.round(Engine.dayTotals(d).cal));
     const prot = seriesOf(d => Math.round(Engine.dayTotals(d).p));
     const fiber = seriesOf(d => Math.round(Engine.dayTotals(d).fiber));
-    const water = seriesOf(d => d.water);
     const score = seriesOf(d => Engine.liverScore(d, p).score);
     const gymCount = keys.filter(k => Storage.getDay(k).gym.done).length;
     const fbCount = keys.filter(k => Storage.getDay(k).football.done).length;
@@ -401,7 +462,7 @@ const App = {
           <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).cal)}</div><div class="al">kcal</div></div>
           <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).p)}</div><div class="al">protein g</div></div>
           <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).fiber)}</div><div class="al">fiber g</div></div>
-          <div class="avg-box"><div class="av">${avg(d=>d.water)}</div><div class="al">water ml</div></div>
+          <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).c)}</div><div class="al">carbs g</div></div>
           <div class="avg-box"><div class="av">${avg(d=>Engine.liverScore(d,p).score)}</div><div class="al">liver score</div></div>
           <div class="avg-box"><div class="av">${gymCount}/${fbCount}</div><div class="al">gym / football</div></div>
         </div>
@@ -409,13 +470,11 @@ const App = {
       <div class="stat-card"><h3>Liver Score</h3><div class="stat-sub">Target ≥ 80</div><canvas id="cScore" height="160"></canvas></div>
       <div class="stat-card"><h3>Calories</h3><div class="stat-sub">Target ${p.targetCalories} kcal</div><canvas id="cCal" height="160"></canvas></div>
       <div class="stat-card"><h3>Protein & Fiber</h3><div class="stat-sub">Protein (green) · Fiber (orange)</div><canvas id="cPF" height="160"></canvas></div>
-      <div class="stat-card"><h3>Water</h3><div class="stat-sub">Goal ${p.waterGoal} ml</div><canvas id="cWater" height="150"></canvas></div>
       ${this.weightWaistMarkup()}
     `;
     Charts.line(document.getElementById('cScore'), lbls, [{ data: score, color: '#34c759' }], { min: 0, max: 100 });
     Charts.line(document.getElementById('cCal'), lbls, [{ data: cal, color: '#0a84ff' }]);
     Charts.line(document.getElementById('cPF'), lbls, [{ data: prot, color: '#34c759' }, { data: fiber, color: '#ff9f0a' }], { min: 0 });
-    Charts.bar(document.getElementById('cWater'), lbls, water, '#0a84ff', { max: p.waterGoal * 1.2 });
     this.drawWeightWaist();
   },
 
@@ -535,7 +594,7 @@ const App = {
       <div class="section-title">Daily Targets</div>
       <div class="field-row">${f('targetCalories','Calories')}${f('targetProtein','Protein (g)')}</div>
       <div class="field-row">${f('targetCarbs','Carbs (g)')}${f('targetFat','Fat (g)')}</div>
-      <div class="field-row">${f('targetFiber','Fiber (g)')}${f('waterGoal','Water (ml)')}</div>
+      ${f('targetFiber','Fiber (g)')}
       <div class="section-title">Schedule</div>
       <div class="field-row">${f('gymTiming','Gym timing','text')}${f('footballTiming','Football timing','text')}</div>
       <div class="field-row">${f('wakeTime','Wake-up','time')}${f('sleepTime','Sleep','time')}</div>
@@ -545,7 +604,7 @@ const App = {
       e.preventDefault();
       const fd = new FormData(e.target);
       const patch = {};
-      ['weight','height','age','targetCalories','targetProtein','targetCarbs','targetFat','targetFiber','waterGoal']
+      ['weight','height','age','targetCalories','targetProtein','targetCarbs','targetFat','targetFiber']
         .forEach(k => patch[k] = +fd.get(k));
       ['gender','gymTiming','footballTiming','wakeTime','sleepTime'].forEach(k => patch[k] = fd.get(k));
       Storage.setProfile(patch);

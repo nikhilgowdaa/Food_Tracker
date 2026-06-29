@@ -123,6 +123,66 @@ const FOOD_DB = [
   { id: 'coconut_water',name:'Coconut Water',   cat: 'drink', unit: 'glass', step: 1, cal: 46,  p: 1.7, c: 9, f: 0.5, fiber: 2.6, liver: 'good', tags: [] },
   { id: 'protein_shake',name:'Protein Shake',   cat: 'drink', unit: 'glass', step: 1, cal: 160, p: 26,  c: 8, f: 3,   fiber: 0, liver: 'good', tags: ['highprotein'] },
 
+  /* ---------------- CURRIES (Indian) ---------------- */
+  /* Vegetarian curries */
+  { id: 'veg_curry',     name: 'Vegetable Curry',      cat: 'curry', unit: 'cup', step: 1, cal: 140, p: 4,  c: 14, f: 8,  fiber: 4.0, liver: 'neutral', tags: ['oil','highfiber','veg'] },
+  { id: 'mixed_veg_curry',name:'Mixed Veg Sabzi',      cat: 'curry', unit: 'cup', step: 1, cal: 120, p: 3,  c: 13, f: 6.5,fiber: 4.5, liver: 'good',    tags: ['oil','highfiber','veg'] },
+  { id: 'veg_korma',     name: 'Veg Korma',            cat: 'curry', unit: 'cup', step: 1, cal: 200, p: 5,  c: 16, f: 13, fiber: 4.0, liver: 'neutral', tags: ['oil','fat','veg'] },
+  { id: 'paneer_bm',     name: 'Paneer Butter Masala', cat: 'curry', unit: 'cup', step: 1, cal: 320, p: 12, c: 12, f: 25, fiber: 2.0, liver: 'neutral', tags: ['fat','veg','highprotein'] },
+  { id: 'palak_paneer',  name: 'Palak Paneer',         cat: 'curry', unit: 'cup', step: 1, cal: 250, p: 13, c: 10, f: 18, fiber: 4.0, liver: 'good',    tags: ['veg','highprotein','highfiber'] },
+  { id: 'kadai_paneer',  name: 'Kadai Paneer',         cat: 'curry', unit: 'cup', step: 1, cal: 280, p: 14, c: 12, f: 20, fiber: 3.0, liver: 'neutral', tags: ['veg','highprotein'] },
+  { id: 'matar_paneer',  name: 'Matar Paneer',         cat: 'curry', unit: 'cup', step: 1, cal: 260, p: 13, c: 16, f: 16, fiber: 5.0, liver: 'good',    tags: ['veg','highprotein','highfiber'] },
+  { id: 'chole',         name: 'Chole (Chana Masala)', cat: 'curry', unit: 'cup', step: 1, cal: 230, p: 10, c: 32, f: 7,  fiber: 9.0, liver: 'good',    tags: ['veg','highprotein','highfiber'] },
+  { id: 'rajma_curry',   name: 'Rajma Masala',         cat: 'curry', unit: 'cup', step: 1, cal: 240, p: 12, c: 35, f: 5,  fiber: 11,  liver: 'good',    tags: ['veg','highprotein','highfiber'] },
+  { id: 'dal_tadka',     name: 'Dal Tadka',            cat: 'curry', unit: 'cup', step: 1, cal: 190, p: 11, c: 24, f: 6,  fiber: 6.0, liver: 'good',    tags: ['veg','highprotein','highfiber'] },
+  { id: 'dal_makhani',   name: 'Dal Makhani',          cat: 'curry', unit: 'cup', step: 1, cal: 290, p: 12, c: 28, f: 14, fiber: 7.0, liver: 'neutral', tags: ['veg','fat','highfiber'] },
+  { id: 'aloo_gobi',     name: 'Aloo Gobi',            cat: 'curry', unit: 'cup', step: 1, cal: 160, p: 4,  c: 22, f: 7,  fiber: 4.0, liver: 'neutral', tags: ['oil','veg','highfiber'] },
+  { id: 'bhindi_masala', name: 'Bhindi Masala',        cat: 'curry', unit: 'cup', step: 1, cal: 150, p: 3,  c: 12, f: 10, fiber: 4.0, liver: 'neutral', tags: ['oil','veg','highfiber'] },
+  { id: 'baingan_bharta',name: 'Baingan Bharta',       cat: 'curry', unit: 'cup', step: 1, cal: 140, p: 3,  c: 14, f: 9,  fiber: 5.0, liver: 'good',    tags: ['veg','highfiber'] },
+  { id: 'mushroom_masala',name:'Mushroom Masala',      cat: 'curry', unit: 'cup', step: 1, cal: 170, p: 6,  c: 12, f: 11, fiber: 3.0, liver: 'neutral', tags: ['veg'] },
+  { id: 'sambar_curry',  name: 'Sambar',               cat: 'curry', unit: 'cup', step: 1, cal: 110, p: 5,  c: 16, f: 3,  fiber: 4.0, liver: 'good',    tags: ['veg','highfiber'] },
+  { id: 'kofta_curry',   name: 'Veg Kofta Curry',      cat: 'curry', unit: 'cup', step: 1, cal: 280, p: 7,  c: 20, f: 19, fiber: 3.5, liver: 'neutral', tags: ['oil','fat','veg'] },
+  { id: 'soya_curry',    name: 'Soya Chunk Curry',     cat: 'curry', unit: 'cup', step: 1, cal: 230, p: 18, c: 18, f: 9,  fiber: 6.0, liver: 'good',    tags: ['veg','highprotein','highfiber'] },
+  /* Non-vegetarian curries */
+  { id: 'chk_curry_c',   name: 'Chicken Curry',        cat: 'curry', unit: 'cup', step: 1, cal: 240, p: 24, c: 6,  f: 13, fiber: 1.0, liver: 'neutral', tags: ['nonveg','highprotein','oil'] },
+  { id: 'butter_chicken',name: 'Butter Chicken',       cat: 'curry', unit: 'cup', step: 1, cal: 330, p: 22, c: 8,  f: 22, fiber: 1.0, liver: 'neutral', tags: ['nonveg','highprotein','fat'] },
+  { id: 'chk_tikka_masala',name:'Chicken Tikka Masala',cat: 'curry', unit: 'cup', step: 1, cal: 290, p: 24, c: 9,  f: 17, fiber: 2.0, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'egg_curry',     name: 'Egg Curry',            cat: 'curry', unit: 'cup', step: 1, cal: 220, p: 12, c: 8,  f: 15, fiber: 2.0, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'fish_curry',    name: 'Fish Curry',           cat: 'curry', unit: 'cup', step: 1, cal: 200, p: 20, c: 6,  f: 11, fiber: 1.0, liver: 'good',    tags: ['nonveg','highprotein','omega3'] },
+  { id: 'mutton_curry',  name: 'Mutton Curry',         cat: 'curry', unit: 'cup', step: 1, cal: 300, p: 22, c: 5,  f: 21, fiber: 1.0, liver: 'neutral', tags: ['nonveg','highprotein','fat'] },
+  { id: 'prawn_curry',   name: 'Prawn Curry',          cat: 'curry', unit: 'cup', step: 1, cal: 210, p: 22, c: 7,  f: 11, fiber: 1.0, liver: 'good',    tags: ['nonveg','highprotein'] },
+
+  /* ---------------- NUTS & DRY FRUITS ---------------- */
+  { id: 'cashews',       name: 'Cashews',          cat: 'snack', unit: '30 g', step: 1, cal: 157, p: 5.0, c: 9,  f: 12,  fiber: 1.0, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'pistachios',    name: 'Pistachios',       cat: 'snack', unit: '30 g', step: 1, cal: 159, p: 6.0, c: 8,  f: 13,  fiber: 3.0, liver: 'good',    tags: ['nut','fat','highfiber'] },
+  { id: 'hazelnuts',     name: 'Hazelnuts',        cat: 'snack', unit: '30 g', step: 1, cal: 188, p: 4.5, c: 5,  f: 18,  fiber: 2.9, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'brazil_nuts',   name: 'Brazil Nuts',      cat: 'snack', unit: '30 g', step: 1, cal: 196, p: 4.0, c: 4,  f: 20,  fiber: 2.3, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'pecans',        name: 'Pecans',           cat: 'snack', unit: '30 g', step: 1, cal: 207, p: 2.7, c: 4,  f: 21,  fiber: 2.9, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'mixed_nuts',    name: 'Mixed Nuts',       cat: 'snack', unit: '30 g', step: 1, cal: 173, p: 5.0, c: 6,  f: 15,  fiber: 2.5, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'sunflower_seed',name: 'Sunflower Seeds',  cat: 'snack', unit: '30 g', step: 1, cal: 175, p: 6.0, c: 6,  f: 15,  fiber: 2.6, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'sesame_seed',   name: 'Sesame Seeds',     cat: 'snack', unit: 'tbsp', step: 1, cal: 52,  p: 1.6, c: 2,  f: 4.5, fiber: 1.1, liver: 'good',    tags: ['nut','fat'] },
+  { id: 'raisins',       name: 'Raisins',          cat: 'snack', unit: '30 g', step: 1, cal: 90,  p: 1.0, c: 22, f: 0.2, fiber: 1.0, liver: 'neutral', tags: ['dryfruit'] },
+  { id: 'dates',         name: 'Dates',            cat: 'snack', unit: 'piece',step: 1, cal: 66,  p: 0.4, c: 18, f: 0,   fiber: 1.6, liver: 'neutral', tags: ['dryfruit'] },
+  { id: 'dried_figs',    name: 'Dried Figs (Anjeer)',cat:'snack', unit: 'piece',step: 1, cal: 47,  p: 0.6, c: 12, f: 0.2, fiber: 1.9, liver: 'good',    tags: ['dryfruit','highfiber'] },
+  { id: 'dried_apricot', name: 'Dried Apricots',   cat: 'snack', unit: '30 g', step: 1, cal: 72,  p: 1.0, c: 19, f: 0.1, fiber: 2.2, liver: 'neutral', tags: ['dryfruit','highfiber'] },
+  { id: 'prunes',        name: 'Prunes',           cat: 'snack', unit: 'piece',step: 1, cal: 23,  p: 0.2, c: 6,  f: 0,   fiber: 0.7, liver: 'good',    tags: ['dryfruit'] },
+  { id: 'dried_cranberry',name:'Dried Cranberries',cat: 'snack', unit: '30 g', step: 1, cal: 92,  p: 0,   c: 24, f: 0.4, fiber: 1.5, liver: 'neutral', tags: ['dryfruit','sugary'] },
+
+  /* ---------------- MORE FRUITS ---------------- */
+  { id: 'grapes',        name: 'Grapes',           cat: 'fruit', unit: 'cup',    step: 1, cal: 104, p: 1.1, c: 27, f: 0.2, fiber: 1.4, liver: 'good',    tags: [] },
+  { id: 'pineapple',     name: 'Pineapple',        cat: 'fruit', unit: 'cup',    step: 1, cal: 82,  p: 0.9, c: 22, f: 0.2, fiber: 2.3, liver: 'good',    tags: [] },
+  { id: 'pear',          name: 'Pear',             cat: 'fruit', unit: 'medium', step: 1, cal: 101, p: 0.6, c: 27, f: 0.2, fiber: 5.5, liver: 'good',    tags: ['highfiber'] },
+  { id: 'kiwi',          name: 'Kiwi',             cat: 'fruit', unit: 'medium', step: 1, cal: 42,  p: 0.8, c: 10, f: 0.4, fiber: 2.1, liver: 'good',    tags: [] },
+  { id: 'muskmelon',     name: 'Muskmelon',        cat: 'fruit', unit: 'cup',    step: 1, cal: 53,  p: 1.3, c: 13, f: 0.3, fiber: 1.4, liver: 'good',    tags: [] },
+  { id: 'strawberry',    name: 'Strawberries',     cat: 'fruit', unit: 'cup',    step: 1, cal: 49,  p: 1.0, c: 12, f: 0.5, fiber: 3.0, liver: 'good',    tags: ['highfiber','antioxidant'] },
+  { id: 'chikoo',        name: 'Sapota (Chikoo)',  cat: 'fruit', unit: 'medium', step: 1, cal: 94,  p: 0.5, c: 23, f: 1.1, fiber: 5.3, liver: 'neutral', tags: ['sugary','highfiber'] },
+  { id: 'custard_apple', name: 'Custard Apple',    cat: 'fruit', unit: 'cup',    step: 1, cal: 150, p: 2.5, c: 36, f: 0.6, fiber: 7.0, liver: 'neutral', tags: ['sugary','highfiber'] },
+  { id: 'plum',          name: 'Plum',             cat: 'fruit', unit: 'medium', step: 1, cal: 30,  p: 0.5, c: 8,  f: 0.2, fiber: 0.9, liver: 'good',    tags: [] },
+  { id: 'peach',         name: 'Peach',            cat: 'fruit', unit: 'medium', step: 1, cal: 59,  p: 1.4, c: 14, f: 0.4, fiber: 2.3, liver: 'good',    tags: [] },
+  { id: 'litchi',        name: 'Litchi',           cat: 'fruit', unit: 'cup',    step: 1, cal: 125, p: 1.6, c: 31, f: 0.8, fiber: 2.5, liver: 'neutral', tags: ['sugary'] },
+  { id: 'dragon_fruit',  name: 'Dragon Fruit',     cat: 'fruit', unit: 'cup',    step: 1, cal: 102, p: 2.0, c: 22, f: 0,   fiber: 5.0, liver: 'good',    tags: ['highfiber'] },
+  { id: 'sweet_lime',    name: 'Sweet Lime (Mosambi)',cat:'fruit',unit: 'medium',step: 1, cal: 50,  p: 1.0, c: 13, f: 0.2, fiber: 2.4, liver: 'good',    tags: [] },
+
   /* ---------------- TREATS / NEGATIVE FOODS ---------------- */
   { id: 'ice_cream',   name: 'Ice Cream',       cat: 'treat', unit: 'scoop', step: 1, cal: 207, p: 3.5, c: 24, f: 11, fiber: 0.7, liver: 'bad', tags: ['sugary','treat'] },
   { id: 'soft_drink',  name: 'Soft Drink',      cat: 'treat', unit: 'can',   step: 1, cal: 140, p: 0,   c: 39, f: 0,  fiber: 0,   liver: 'bad', tags: ['sugary','treat','soda'] },
@@ -162,9 +222,20 @@ const BREAKFAST_OPTIONS = ['idli','dosa','set_dosa','rava_dosa','neer_dosa','poh
 const LUNCH_PROTEIN   = ['chicken_br','paneer'];
 const LUNCH_CARB      = ['rice','brown_rice','chapati'];
 const VEG_OPTIONS     = ['broccoli','green_peas','spinach','beans','carrot','capsicum','mushroom','mixed_veg'];
-const SNACK_OPTIONS   = ['banana','apple','milk','coffee','green_tea','whey','walnuts','flaxseed','almonds'];
 const PROTEIN_VEG     = ['milk','whey','paneer'];
 const PROTEIN_NONVEG  = ['boiled_egg','chicken_br','milk','whey'];
+
+/* Curries — split by diet so veg days only show veg curries */
+const CURRY_VEG = ['veg_curry','mixed_veg_curry','veg_korma','paneer_bm','palak_paneer','kadai_paneer','matar_paneer','chole','rajma_curry','dal_tadka','dal_makhani','aloo_gobi','bhindi_masala','baingan_bharta','mushroom_masala','sambar_curry','kofta_curry','soya_curry'];
+const CURRY_NONVEG = ['chk_curry_c','butter_chicken','chk_tikka_masala','egg_curry','fish_curry','mutton_curry','prawn_curry'];
+
+/* Snack builder groups */
+const SNACK_FRUITS = ['banana','apple','orange','papaya','guava','pomegranate','berries','watermelon','grapes','pineapple','pear','kiwi','muskmelon','strawberry','mango','chikoo','custard_apple','plum','peach','litchi','dragon_fruit','sweet_lime'];
+const SNACK_NUTS   = ['walnuts','almonds','cashews','pistachios','peanuts','hazelnuts','brazil_nuts','pecans','mixed_nuts','pumpkin_seed','sunflower_seed','flaxseed','chia','sesame_seed','raisins','dates','dried_figs','dried_apricot','prunes','dried_cranberry'];
+const SNACK_DRINKS = ['black_coffee','coffee','green_tea','tea','buttermilk','lemon_water','coconut_water'];
+const SNACK_OTHER  = ['milk','whey','protein_shake','makhana','sprouts','roasted_chana','dark_choc'];
+/* kept for backward compatibility */
+const SNACK_OPTIONS = SNACK_FRUITS.concat(SNACK_NUTS, SNACK_DRINKS, SNACK_OTHER);
 
 /* expose for non-module usage */
 if (typeof window !== 'undefined') {
@@ -180,4 +251,10 @@ if (typeof window !== 'undefined') {
   window.SNACK_OPTIONS = SNACK_OPTIONS;
   window.PROTEIN_VEG = PROTEIN_VEG;
   window.PROTEIN_NONVEG = PROTEIN_NONVEG;
+  window.CURRY_VEG = CURRY_VEG;
+  window.CURRY_NONVEG = CURRY_NONVEG;
+  window.SNACK_FRUITS = SNACK_FRUITS;
+  window.SNACK_NUTS = SNACK_NUTS;
+  window.SNACK_DRINKS = SNACK_DRINKS;
+  window.SNACK_OTHER = SNACK_OTHER;
 }
