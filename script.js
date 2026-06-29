@@ -660,8 +660,10 @@ const App = {
 
   renderProfile(pane) {
     const p = Storage.getProfile();
-    const f = (k, label, type = 'number', extra = '') =>
-      `<div class="field"><label>${label}</label><input name="${k}" type="${type}" value="${p[k] ?? ''}" ${extra}/></div>`;
+    const f = (k, label, type = 'number', extra = '') => {
+      const attrs = type === 'number' ? `inputmode="decimal" step="any" min="0" ${extra}` : extra;
+      return `<div class="field"><label>${label}</label><input name="${k}" type="${type}" value="${p[k] ?? ''}" ${attrs}/></div>`;
+    };
     pane.innerHTML = `<form id="profileForm" class="list-card" style="padding:18px">
       <div class="field-row">${f('weight','Weight (kg)')}${f('height','Height (cm)')}</div>
       <div class="field-row">${f('age','Age')}
