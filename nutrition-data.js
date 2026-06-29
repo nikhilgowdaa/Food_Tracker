@@ -268,6 +268,19 @@ const FOOD_DB = [
   { id: 'avarekai_palya',     name: 'Avarekai Palya (Field Beans)', cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 7, c: 18, f: 4, fiber: 7.0, liver: 'good', tags: ['highprotein','highfiber'] },
   { id: 'chowchow_palya',     name: 'Chow Chow Palya',       cat: 'veg', unit: 'cup', step: 1, cal: 75,  p: 2,   c: 9,  f: 4,   fiber: 3.0, liver: 'good', tags: ['highfiber'] },
   { id: 'sweetcorn_palya',    name: 'Sweet Corn Palya',      cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 4,   c: 22, f: 4,   fiber: 4.0, liver: 'neutral', tags: ['highfiber'] },
+  { id: 'kumbalakayi_palya',  name: 'Ash Gourd Palya (Boodu Kumbalakayi)', cat: 'veg', unit: 'cup', step: 1, cal: 70, p: 2, c: 8, f: 4, fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'pumpkin_palya',      name: 'Pumpkin Palya (Sihi Kumbalakayi)', cat: 'veg', unit: 'cup', step: 1, cal: 90, p: 2, c: 14, f: 4, fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'sorekayi_palya',     name: 'Bottle Gourd Palya (Sorekayi)', cat: 'veg', unit: 'cup', step: 1, cal: 70, p: 1.5, c: 8, f: 4, fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'okra_palya',         name: 'Okra Palya (Bende)',    cat: 'veg', unit: 'cup', step: 1, cal: 100, p: 2.5, c: 10, f: 5, fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'radish_palya',       name: 'Radish Palya (Mullangi)', cat: 'veg', unit: 'cup', step: 1, cal: 70, p: 2, c: 8, f: 4, fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'yam_palya',          name: 'Yam Palya (Suvarnagadde)', cat: 'veg', unit: 'cup', step: 1, cal: 140, p: 2.5, c: 24, f: 4, fiber: 4.0, liver: 'neutral', tags: ['highfiber'] },
+  { id: 'sweetpotato_palya',  name: 'Sweet Potato Palya (Genasu)', cat: 'veg', unit: 'cup', step: 1, cal: 140, p: 2, c: 26, f: 4, fiber: 4.0, liver: 'neutral', tags: ['highfiber'] },
+  { id: 'colocasia_palya',    name: 'Colocasia Palya (Kesuvina Gadde)', cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 2, c: 24, f: 4, fiber: 3.0, liver: 'neutral', tags: ['highfiber'] },
+  { id: 'methi_palya',        name: 'Methi Greens Palya (Menthya Soppu)', cat: 'veg', unit: 'cup', step: 1, cal: 80, p: 4, c: 7, f: 4, fiber: 4.0, liver: 'good', tags: ['highfiber','liverstar'] },
+  { id: 'dantu_palya',        name: 'Amaranth Greens Palya (Dantina Soppu)', cat: 'veg', unit: 'cup', step: 1, cal: 75, p: 4, c: 7, f: 4, fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'sprouts_palya',      name: 'Sprouts Palya (Usli)',  cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 8, c: 16, f: 3, fiber: 6.0, liver: 'good', tags: ['highprotein','highfiber'] },
+  { id: 'greenpeas_palya',    name: 'Green Peas Palya (Batani)', cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 6, c: 18, f: 4, fiber: 6.0, liver: 'good', tags: ['highprotein','highfiber'] },
+  { id: 'mixedveg_palya',     name: 'Mixed Veg Palya',       cat: 'veg', unit: 'cup', step: 1, cal: 95, p: 3, c: 12, f: 4, fiber: 4.0, liver: 'good', tags: ['highfiber'] },
 
   /* ---------------- KANNADA SWEETS / SAVOURY SNACKS ---------------- */
   { id: 'chakli',       name: 'Chakli',             cat: 'snack', unit: 'piece', step: 1, cal: 90,  p: 1.5, c: 10, f: 5,  fiber: 0.8, liver: 'bad', tags: ['fried'] },
@@ -368,6 +381,9 @@ const SERVING_GRAMS = {
   capsicum_palya: 120, potato_palya: 130, gobi_palya: 120, snakegourd_palya: 120, ridgegourd_palya: 120,
   knolkhol_palya: 120, clusterbeans_palya: 120, brinjal_palya: 120, spinach_palya: 120, tonde_palya: 120,
   rawbanana_palya: 130, avarekai_palya: 130, chowchow_palya: 120, sweetcorn_palya: 130,
+  kumbalakayi_palya: 120, pumpkin_palya: 120, sorekayi_palya: 120, okra_palya: 120, radish_palya: 120,
+  yam_palya: 130, sweetpotato_palya: 130, colocasia_palya: 130, methi_palya: 120, dantu_palya: 120,
+  sprouts_palya: 130, greenpeas_palya: 130, mixedveg_palya: 120,
 };
 
 /* grams (or ml) in one serving unit of a food, or null if unknown */
@@ -387,7 +403,7 @@ const BREAKFAST_OPTIONS = ['idli','rava_idli','thatte_idli','dosa','set_dosa','r
 const LUNCH_PROTEIN   = ['chicken_br','paneer'];
 const LUNCH_CARB      = ['rice','brown_rice','chapati','ragi_rotti','akki_rotti','jolada_rotti','ragi_mudde','bajra_roti','jowar_upma'];
 const RICE_OPTIONS    = ['lemon_rice','puliogare','bisibele','vangi_bath','tomato_rice','coconut_rice','curd_rice','ghee_rice','veg_pulao','shavige','shavige_upittu','shavige_chitranna','chicken_biryani','egg_rice'];
-const VEG_OPTIONS     = ['broccoli','green_peas','spinach','beans','carrot','capsicum','mushroom','mixed_veg','palya','kosambari','beetroot_palya','carrot_palya','bittergourd_palya','beans_palya','cabbage_palya','capsicum_palya','potato_palya','gobi_palya','snakegourd_palya','ridgegourd_palya','knolkhol_palya','clusterbeans_palya','brinjal_palya','spinach_palya','tonde_palya','rawbanana_palya','avarekai_palya','chowchow_palya','sweetcorn_palya'];
+const VEG_OPTIONS     = ['broccoli','green_peas','spinach','beans','carrot','capsicum','mushroom','mixed_veg','palya','kosambari','beetroot_palya','carrot_palya','bittergourd_palya','beans_palya','cabbage_palya','capsicum_palya','potato_palya','gobi_palya','snakegourd_palya','ridgegourd_palya','knolkhol_palya','clusterbeans_palya','brinjal_palya','spinach_palya','tonde_palya','rawbanana_palya','avarekai_palya','chowchow_palya','sweetcorn_palya','kumbalakayi_palya','pumpkin_palya','sorekayi_palya','okra_palya','radish_palya','yam_palya','sweetpotato_palya','colocasia_palya','methi_palya','dantu_palya','sprouts_palya','greenpeas_palya','mixedveg_palya'];
 const PROTEIN_VEG     = ['milk','whey','paneer'];
 const PROTEIN_NONVEG  = ['boiled_egg','chicken_br','egg_bhurji','milk','whey'];
 
