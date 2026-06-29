@@ -163,6 +163,16 @@ body {
 }
 .mini-btn:active { transform: scale(0.94); }
 
+/* ---------- Activity note ---------- */
+.activity-note {
+  display: flex; gap: 10px; align-items: center; margin-bottom: 14px;
+  padding: 11px 14px; border-radius: 16px; font-size: 13px; line-height: 1.35;
+  background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.activity-note[hidden] { display: none; }
+.activity-note .an-ic { font-size: 18px; flex: 0 0 auto; }
+.activity-note small { color: var(--text-sub); }
+
 /* ---------- Macro grid ---------- */
 .macro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
 .macro {
