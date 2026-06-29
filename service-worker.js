@@ -3,7 +3,7 @@
    Cache-first for the app shell; network-falls-back-to-cache otherwise.
    ===================================================================== */
 
-const CACHE = 'flt-pro-v3';
+const CACHE = 'flt-pro-v8';
 const ASSETS = [
   './',
   './index.html',

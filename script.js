@@ -138,9 +138,21 @@ const App = {
       score >= 55 ? `${score}/100 · Decent — a few tweaks will boost it.` :
                     `${score}/100 · Needs attention. Tap Why?`;
 
-    // macros
+    // macros — use activity-adjusted (effective) targets
+    const et = Engine.effectiveTargets(d, p);
+    const ep = { ...p, ...et };
     const totals = Engine.dayTotals(d);
-    this.renderMacros(totals, p);
+    this.renderMacros(totals, ep);
+
+    // activity target note
+    const note = document.getElementById('activityNote');
+    const parts = [];
+    let icon = '🛌';
+    if (et.gym) { icon = '💪'; parts.push('Gym day — full target'); }
+    else parts.push('No gym — target −300 kcal');
+    if (et.fb) { icon = et.gym ? '🔥' : '⚽'; parts.push('Football +200 kcal'); }
+    note.hidden = false;
+    note.innerHTML = `<span class="an-ic">${icon}</span><span>${parts.join(' · ')}. Targets: <strong>${et.targetCalories} kcal</strong> · <strong>${et.targetProtein}g protein</strong>.</span>`;
 
     // activity
     document.getElementById('gymToggle').checked = d.gym.done;
@@ -186,7 +198,8 @@ const App = {
     const unit = key === 'cal' ? 'kcal' : 'g';
     const day = this.day;
     const p = Storage.getProfile();
-    const tgt = { cal: p.targetCalories, p: p.targetProtein, c: p.targetCarbs, f: p.targetFat, fiber: p.targetFiber }[key];
+    const et = Engine.effectiveTargets(day, p);
+    const tgt = { cal: et.targetCalories, p: et.targetProtein, c: et.targetCarbs, f: et.targetFat, fiber: et.targetFiber }[key];
     const slots = [['breakfast', 'Breakfast'], ['protein', 'Protein'], ['lunch', 'Lunch'], ['snacks', 'Snacks'], ['dinner', 'Dinner']];
     let total = 0;
     let body = '';
@@ -281,13 +294,17 @@ const App = {
       const ids = this.diet === 'veg' ? PROTEIN_VEG : PROTEIN_NONVEG;
       return [{ title: this.diet === 'veg' ? 'Vegetarian Protein' : 'Non-Veg Protein', ids }];
     }
-    if (slot === 'lunch') {
-      const protIds = this.diet === 'veg' ? ['paneer'] : ['chicken_br', 'paneer'];
+    if (slot === 'lunch' || slot === 'dinner') {
+      const protIds = this.diet === 'veg'
+        ? ['paneer', 'tofu']
+        : ['chicken_br', 'grilled_chk', 'chicken_kebab', 'paneer', 'boiled_egg', 'egg_bhurji', 'fish', 'fish_fry'];
       const curryIds = this.diet === 'veg' ? CURRY_VEG : CURRY_VEG.concat(CURRY_NONVEG);
+      const riceIds = this.diet === 'veg' ? RICE_OPTIONS.filter(id => !(getFood(id).tags || []).includes('nonveg')) : RICE_OPTIONS;
       return [
         { title: 'Protein', ids: protIds },
         { title: 'Curries', ids: curryIds },
-        { title: 'Carbs', ids: LUNCH_CARB },
+        { title: 'Rice & One-pot', ids: riceIds },
+        { title: 'Carbs & Rottis', ids: LUNCH_CARB },
         { title: 'Vegetables', ids: VEG_OPTIONS },
       ];
     }
@@ -309,8 +326,12 @@ const App = {
       poha: 1, upma: 1, pongal: 1, chapati_bf: 2, brown_bread: 2, white_bread: 2, oats: 1,
       idiyappam: 3, appam: 2, uttapam: 2, paratha: 2, methi_thepla: 2, ragi_dosa: 2, moong_chilla: 2,
       chapati: 2, phulka: 2, rice: 1.5, brown_rice: 1.5, jeera_rice: 1.5, quinoa: 1.5, millet: 1.5,
-      chicken_br: 1.5, grilled_chk: 1.5, paneer: 1, tofu: 1, milk: 1, whey: 1,
+      chicken_br: 1.5, grilled_chk: 1.5, chicken_kebab: 1.5, paneer: 1, tofu: 1, milk: 1, whey: 1,
       boiled_egg: 2, egg: 2, egg_white: 3, dal: 1, fish: 1, salmon: 1,
+      // kannada / south indian
+      rava_idli: 3, thatte_idli: 2, benne_dosa: 2, mysore_dosa: 1, medu_vada: 2, maddur_vada: 2,
+      goli_baje: 3, ragi_rotti: 2, akki_rotti: 2, jolada_rotti: 2, ragi_mudde: 1, bajra_roti: 2,
+      fish_fry: 1, egg_bhurji: 1, chiroti: 1, mysore_pak: 1, holige: 1, chakli: 2, kodubale: 2, nippattu: 2,
     };
     if (map[f.id] != null) return map[f.id];
     if (f.cat === 'fat') return 2;
@@ -323,10 +344,12 @@ const App = {
   foodCardHTML(f, slot, selMap) {
     const sel = selMap[f.id];
     const rec = this.recQty(f);
+    const showG = !/\d/.test(f.unit) && SERVING_GRAMS[f.id];
+    const perUnit = showG ? `1 ${f.unit} ≈ ${SERVING_GRAMS[f.id]} ${unitIsLiquid(f) ? 'ml' : 'g'}` : `per ${f.unit}`;
     return `<div class="food-card ${sel ? 'selected' : ''}" data-card="${f.id}" data-slot="${slot}">
       <span class="liver-dot ${f.liver}"></span>
       <div class="fc-name">${f.name}</div>
-      <div class="fc-macros">${Math.round(f.cal)} kcal · P ${f.p} · C ${f.c} · F ${f.f}<br>Fiber ${f.fiber} · per ${f.unit}</div>
+      <div class="fc-macros">${Math.round(f.cal)} kcal · P ${f.p} · C ${f.c} · F ${f.f}<br>Fiber ${f.fiber} · ${perUnit}</div>
       <div class="fc-rec">${sel ? '✓ Eaten: ' + this.qtyLabel(f, sel) : 'Tap to add · rec ' + this.qtyLabel(f, rec)}</div>
       <div class="qty-row" data-qtyrow="${f.id}">${this.qtyButtons(f, sel)}</div>
     </div>`;
@@ -443,34 +466,39 @@ const App = {
     const day = this.day;
     const { items, rationale } = Engine.generateDinner(day, p, this.diet);
     const t = Engine.mealTotals(items);
-    const eaten = Engine.dayTotals(day, 'dinner');
     const logged = day.meals.dinner.length > 0;
 
     area.innerHTML = `
-      <p class="hint">Auto-generated from your breakfast, lunch, snacks, remaining targets, and tonight's gym/football.</p>
       <div class="dinner-card">
-        <div class="row-between"><strong>Suggested Dinner</strong><span class="diet-badge ${this.diet}">${this.diet === 'veg' ? 'Veg' : 'Non-Veg'}</span></div>
-        <div style="margin-top:10px">
+        <div class="row-between"><strong>💡 Suggested Dinner</strong><span class="diet-badge ${this.diet}">${this.diet === 'veg' ? 'Veg' : 'Non-Veg'}</span></div>
+        <p class="hint" style="margin:6px 0 4px">Auto-balanced from your breakfast, lunch, snacks, remaining targets and tonight's activity. Use it as-is, or log what you actually ate below.</p>
+        <div style="margin-top:8px">
           ${items.map(i => { const f = getFood(i.id); return `<div class="dinner-item"><span>${f.name}</span><span>${this.qtyLabel(f, i.qty)}</span></div>`; }).join('')}
         </div>
         <div class="dinner-item" style="font-weight:800"><span>Dinner total</span><span>${Math.round(t.cal)} kcal · ${Math.round(t.p)}g P</span></div>
         <ul class="rationale">${rationale.map(r => `<li>${r}</li>`).join('')}</ul>
-        <button class="btn" id="acceptDinner" style="margin-top:14px">${logged ? 'Replace logged dinner' : 'Accept this dinner'}</button>
-        ${logged ? '<button class="btn secondary" id="clearDinner" style="margin-top:8px">Clear dinner</button>' : ''}
+        <button class="btn" id="useDinner" style="margin-top:14px">${logged ? '↺ Replace my dinner with this suggestion' : '✓ Use this suggested dinner'}</button>
       </div>
-      <div class="sel-summary">After accepting: total day ≈ ${Math.round(eaten.cal + t.cal)} kcal · ${Math.round(eaten.p + t.p)}g protein · ${Math.round(eaten.fiber + t.fiber)}g fiber</div>
+
+      <div class="section-title">${logged ? 'Your logged dinner — search & adjust' : 'Or search & log what you actually ate'}</div>
+      <div id="dinnerBuilder"></div>
     `;
-    area.querySelector('#acceptDinner').addEventListener('click', () => {
+    area.querySelector('#useDinner').addEventListener('click', () => {
       day.meals.dinner = items.map(i => ({ ...i }));
-      this.saveDay(); this.toast('Dinner logged ✓'); this.renderDinner(area);
+      this.saveDay(); this.toast('Dinner set to suggestion ✓');
+      this.searchTerm = ''; this.renderDinner(area);
     });
-    const clr = area.querySelector('#clearDinner');
-    if (clr) clr.addEventListener('click', () => { day.meals.dinner = []; this.saveDay(); this.renderDinner(area); });
+    // full search + recommend-then-adjust builder, writing to the dinner slot
+    this.renderBuilder(area.querySelector('#dinnerBuilder'), 'dinner');
   },
 
   qtyLabel(f, qty) {
     if (f.unit.indexOf('100 g') === 0) return Math.round(qty * 100) + ' g';
-    return qty + ' × ' + f.unit;
+    let s = qty + ' × ' + f.unit;
+    if (!/\d/.test(f.unit) && SERVING_GRAMS[f.id]) {
+      s += ` (${Math.round(SERVING_GRAMS[f.id] * qty)} ${unitIsLiquid(f) ? 'ml' : 'g'})`;
+    }
+    return s;
   },
 
   /* ===================================================================
@@ -725,7 +753,7 @@ const App = {
         <input type="file" id="importFile" accept="application/json" hidden />
         <button class="btn danger" id="resetBtn" style="margin-top:10px">Reset All Data</button>
       </div>
-      <div class="hint">Future features: barcode scanner, food search, voice logging, AI coach, recipe ideas, meal reminders, cloud sync, Apple Health, CSV export, multiple profiles.</div>`;
+      <div class="hint">Future features: barcode scanner, voice logging, AI coach, recipe ideas, meal reminders, cloud sync, Apple Health, CSV export, multiple profiles.</div>`;
     pane.querySelector('#exportBtn').addEventListener('click', () => {
       const blob = new Blob([Storage.exportJSON()], { type: 'application/json' });
       const a = document.createElement('a');

@@ -183,7 +183,102 @@ const FOOD_DB = [
   { id: 'dragon_fruit',  name: 'Dragon Fruit',     cat: 'fruit', unit: 'cup',    step: 1, cal: 102, p: 2.0, c: 22, f: 0,   fiber: 5.0, liver: 'good',    tags: ['highfiber'] },
   { id: 'sweet_lime',    name: 'Sweet Lime (Mosambi)',cat:'fruit',unit: 'medium',step: 1, cal: 50,  p: 1.0, c: 13, f: 0.2, fiber: 2.4, liver: 'good',    tags: [] },
 
+  /* ---------------- SOUTH INDIAN / KANNADA RICE & ONE-POT ---------------- */
+  { id: 'lemon_rice',   name: 'Lemon Rice (Chitranna)', cat: 'rice', unit: 'cup', step: 1, cal: 230, p: 4,  c: 40, f: 6,  fiber: 2.0, liver: 'neutral', tags: ['oil'] },
+  { id: 'puliogare',    name: 'Puliyogare (Tamarind Rice)', cat: 'rice', unit: 'cup', step: 1, cal: 260, p: 5, c: 44, f: 7, fiber: 3.0, liver: 'neutral', tags: ['oil'] },
+  { id: 'bisibele',     name: 'Bisi Bele Bath',     cat: 'rice', unit: 'cup', step: 1, cal: 280, p: 8,  c: 45, f: 8,  fiber: 5.0, liver: 'good',    tags: ['highfiber'] },
+  { id: 'vangi_bath',   name: 'Vangi Bath',         cat: 'rice', unit: 'cup', step: 1, cal: 250, p: 5,  c: 42, f: 7,  fiber: 4.0, liver: 'neutral', tags: ['oil','highfiber'] },
+  { id: 'tomato_rice',  name: 'Tomato Rice',        cat: 'rice', unit: 'cup', step: 1, cal: 240, p: 4,  c: 42, f: 6,  fiber: 2.5, liver: 'neutral', tags: ['oil'] },
+  { id: 'coconut_rice', name: 'Coconut Rice',       cat: 'rice', unit: 'cup', step: 1, cal: 290, p: 5,  c: 40, f: 12, fiber: 3.0, liver: 'neutral', tags: ['fat'] },
+  { id: 'curd_rice',    name: 'Curd Rice',          cat: 'rice', unit: 'cup', step: 1, cal: 200, p: 6,  c: 33, f: 5,  fiber: 1.0, liver: 'good',    tags: [] },
+  { id: 'ghee_rice',    name: 'Ghee Rice',          cat: 'rice', unit: 'cup', step: 1, cal: 300, p: 5,  c: 45, f: 11, fiber: 1.5, liver: 'neutral', tags: ['ghee','fat'] },
+  { id: 'veg_pulao',    name: 'Veg Pulao',          cat: 'rice', unit: 'cup', step: 1, cal: 260, p: 6,  c: 42, f: 8,  fiber: 4.0, liver: 'neutral', tags: ['oil','highfiber'] },
+  { id: 'shavige',      name: 'Shavige (Rice Vermicelli)', cat: 'rice', unit: 'cup', step: 1, cal: 200, p: 4, c: 40, f: 3, fiber: 2.0, liver: 'neutral', tags: [] },
+  { id: 'chicken_biryani', name: 'Chicken Biryani', cat: 'rice', unit: 'cup', step: 1, cal: 330, p: 16, c: 42, f: 11, fiber: 2.0, liver: 'neutral', tags: ['nonveg','highprotein','oil'] },
+  { id: 'egg_rice',     name: 'Egg Rice',           cat: 'rice', unit: 'cup', step: 1, cal: 280, p: 11, c: 38, f: 9,  fiber: 1.5, liver: 'neutral', tags: ['nonveg','highprotein'] },
+
+  /* ---------------- SOUTH INDIAN / KANNADA TIFFIN (breakfast) ---------------- */
+  { id: 'rava_idli',    name: 'Rava Idli',          cat: 'breakfast', unit: 'piece', step: 1, cal: 75,  p: 2.5, c: 13, f: 1.5, fiber: 1.0, liver: 'neutral', tags: [] },
+  { id: 'thatte_idli',  name: 'Thatte Idli',        cat: 'breakfast', unit: 'piece', step: 1, cal: 90,  p: 3.0, c: 18, f: 0.6, fiber: 1.2, liver: 'good',    tags: ['steamed'] },
+  { id: 'khara_bath',   name: 'Khara Bath (Rava Bath)', cat: 'breakfast', unit: 'cup', step: 1, cal: 200, p: 4, c: 32, f: 6, fiber: 2.0, liver: 'neutral', tags: ['oil'] },
+  { id: 'kesari_bath',  name: 'Kesari Bath',        cat: 'breakfast', unit: 'cup', step: 1, cal: 280, p: 4,  c: 45, f: 10, fiber: 1.0, liver: 'bad',     tags: ['sugary','ghee'] },
+  { id: 'benne_dosa',   name: 'Benne Dosa',         cat: 'breakfast', unit: 'piece', step: 1, cal: 150, p: 3,  c: 24, f: 5,  fiber: 1.0, liver: 'neutral', tags: ['ghee'] },
+  { id: 'mysore_dosa',  name: 'Mysore Masala Dosa', cat: 'breakfast', unit: 'piece', step: 1, cal: 280, p: 5,  c: 40, f: 10, fiber: 3.0, liver: 'neutral', tags: ['oil'] },
+  { id: 'medu_vada',    name: 'Medu Vada',          cat: 'breakfast', unit: 'piece', step: 1, cal: 97,  p: 3,  c: 10, f: 5,  fiber: 1.5, liver: 'neutral', tags: ['fried'] },
+  { id: 'maddur_vada',  name: 'Maddur Vada',        cat: 'breakfast', unit: 'piece', step: 1, cal: 130, p: 2.5,c: 15, f: 7,  fiber: 1.0, liver: 'neutral', tags: ['fried'] },
+  { id: 'goli_baje',    name: 'Goli Baje (Mangalore Bajji)', cat: 'breakfast', unit: 'piece', step: 1, cal: 80, p: 1.5, c: 10, f: 4, fiber: 0.5, liver: 'neutral', tags: ['fried'] },
+  { id: 'sabudana_khichdi', name: 'Sabudana Khichdi', cat: 'breakfast', unit: 'cup', step: 1, cal: 250, p: 4, c: 38, f: 9, fiber: 2.0, liver: 'neutral', tags: ['oil'] },
+
+  /* ---------------- KANNADA ROTTIS / MILLET BREADS ---------------- */
+  { id: 'ragi_rotti',   name: 'Ragi Rotti',         cat: 'carb', unit: 'piece', step: 1, cal: 120, p: 3,  c: 22, f: 3,  fiber: 4.0, liver: 'good', tags: ['wholegrain','highfiber'] },
+  { id: 'akki_rotti',   name: 'Akki Rotti',         cat: 'carb', unit: 'piece', step: 1, cal: 140, p: 2.5,c: 26, f: 3.5,fiber: 2.0, liver: 'neutral', tags: [] },
+  { id: 'jolada_rotti', name: 'Jolada Rotti (Jowar)', cat: 'carb', unit: 'piece', step: 1, cal: 120, p: 3, c: 24, f: 1, fiber: 3.5, liver: 'good', tags: ['wholegrain','highfiber'] },
+  { id: 'ragi_mudde',   name: 'Ragi Mudde',         cat: 'carb', unit: 'ball', step: 1, cal: 130, p: 3,  c: 28, f: 1,  fiber: 4.0, liver: 'good', tags: ['wholegrain','highfiber'] },
+  { id: 'bajra_roti',   name: 'Bajra Roti',         cat: 'carb', unit: 'piece', step: 1, cal: 110, p: 3,  c: 22, f: 1.5,fiber: 3.5, liver: 'good', tags: ['wholegrain','highfiber'] },
+  { id: 'jowar_upma',   name: 'Jowar Upma',         cat: 'carb', unit: 'cup', step: 1, cal: 170, p: 4,  c: 30, f: 4,  fiber: 4.5, liver: 'good', tags: ['wholegrain','highfiber'] },
+
+  /* ---------------- SOUTH INDIAN VEG CURRIES / SIDES ---------------- */
+  { id: 'rasam',        name: 'Rasam',              cat: 'curry', unit: 'cup', step: 1, cal: 60,  p: 3,  c: 9,  f: 1.5, fiber: 2.0, liver: 'good', tags: ['veg','highfiber'] },
+  { id: 'avial',        name: 'Avial',              cat: 'curry', unit: 'cup', step: 1, cal: 150, p: 4,  c: 12, f: 10, fiber: 4.0, liver: 'good', tags: ['veg','highfiber','fat'] },
+  { id: 'kootu',        name: 'Kootu (Dal + Veg)',  cat: 'curry', unit: 'cup', step: 1, cal: 160, p: 7,  c: 18, f: 6,  fiber: 5.0, liver: 'good', tags: ['veg','highprotein','highfiber'] },
+  { id: 'gojju',        name: 'Gojju',              cat: 'curry', unit: 'cup', step: 1, cal: 110, p: 2,  c: 18, f: 4,  fiber: 2.0, liver: 'neutral', tags: ['veg'] },
+  { id: 'huli',         name: 'Huli (Sambar-style)',cat: 'curry', unit: 'cup', step: 1, cal: 110, p: 5,  c: 16, f: 3,  fiber: 4.0, liver: 'good', tags: ['veg','highfiber'] },
+  { id: 'majjige_huli', name: 'Majjige Huli',       cat: 'curry', unit: 'cup', step: 1, cal: 120, p: 4,  c: 10, f: 7,  fiber: 3.0, liver: 'neutral', tags: ['veg'] },
+  { id: 'palya',        name: 'Palya (Veg Stir-fry)', cat: 'veg', unit: 'cup', step: 1, cal: 90, p: 3, c: 10, f: 4, fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'kosambari',    name: 'Kosambari (Lentil Salad)', cat: 'veg', unit: 'cup', step: 1, cal: 90, p: 5, c: 12, f: 2, fiber: 4.0, liver: 'good', tags: ['highprotein','highfiber'] },
+
+  /* ---------------- SOUTH INDIAN NON-VEG ---------------- */
+  { id: 'chicken_ghee_roast', name: 'Chicken Ghee Roast', cat: 'curry', unit: 'cup', step: 1, cal: 320, p: 26, c: 6, f: 20, fiber: 1.0, liver: 'neutral', tags: ['nonveg','highprotein','ghee','fat'] },
+  { id: 'chicken_sukka', name: 'Chicken Sukka',     cat: 'curry', unit: 'cup', step: 1, cal: 260, p: 27, c: 5,  f: 14, fiber: 2.0, liver: 'good',    tags: ['nonveg','highprotein'] },
+  { id: 'chicken_chettinad', name: 'Chicken Chettinad', cat: 'curry', unit: 'cup', step: 1, cal: 290, p: 25, c: 8, f: 17, fiber: 2.0, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'mutton_sukka', name: 'Mutton Sukka',       cat: 'curry', unit: 'cup', step: 1, cal: 300, p: 24, c: 4,  f: 21, fiber: 1.0, liver: 'neutral', tags: ['nonveg','highprotein','fat'] },
+  { id: 'prawn_sukka',  name: 'Prawn Sukka',        cat: 'curry', unit: 'cup', step: 1, cal: 220, p: 23, c: 6,  f: 11, fiber: 1.0, liver: 'good',    tags: ['nonveg','highprotein'] },
+  { id: 'fish_fry',     name: 'Fish Fry',           cat: 'protein', unit: 'piece', step: 1, cal: 200, p: 22, c: 5, f: 10, fiber: 0, liver: 'good', tags: ['nonveg','highprotein','omega3','fried'] },
+  { id: 'egg_bhurji',   name: 'Egg Bhurji',         cat: 'protein', unit: 'cup', step: 1, cal: 200, p: 13, c: 4, f: 15, fiber: 1.0, liver: 'good', tags: ['nonveg','highprotein'] },
+  { id: 'chicken_kebab',name: 'Chicken Kebab',      cat: 'protein', unit: '100 g', step: 1, cal: 175, p: 28, c: 3, f: 6, fiber: 0, liver: 'good', tags: ['nonveg','highprotein'] },
+
+  /* ---------------- SHAVIGE (VERMICELLI) DISHES ---------------- */
+  { id: 'shavige_upittu',    name: 'Shavige Upittu (Vermicelli Upma)', cat: 'rice', unit: 'cup', step: 1, cal: 210, p: 5, c: 38, f: 5, fiber: 2.5, liver: 'neutral', tags: ['oil'] },
+  { id: 'shavige_chitranna', name: 'Shavige Chitranna (Lemon Vermicelli)', cat: 'rice', unit: 'cup', step: 1, cal: 220, p: 5, c: 40, f: 6, fiber: 2.5, liver: 'neutral', tags: ['oil'] },
+
+  /* ---------------- SAARUS ---------------- */
+  { id: 'bele_saaru',   name: 'Bele Saaru (Dal Saaru)',     cat: 'curry', unit: 'cup', step: 1, cal: 130, p: 7, c: 18, f: 3,   fiber: 4.0, liver: 'good', tags: ['veg','highprotein','highfiber'] },
+  { id: 'soppu_saaru',  name: 'Soppu Saaru (Greens Saaru)', cat: 'curry', unit: 'cup', step: 1, cal: 90,  p: 5, c: 12, f: 2.5, fiber: 4.0, liver: 'good', tags: ['veg','highfiber'] },
+  { id: 'bassaru',      name: 'Bas Saaru (Bassaru)',        cat: 'curry', unit: 'cup', step: 1, cal: 110, p: 6, c: 14, f: 3,   fiber: 4.0, liver: 'good', tags: ['veg','highfiber'] },
+  { id: 'tomato_saaru', name: 'Tomato Saaru',               cat: 'curry', unit: 'cup', step: 1, cal: 70,  p: 3, c: 11, f: 2,   fiber: 2.5, liver: 'good', tags: ['veg'] },
+  { id: 'pepper_saaru', name: 'Pepper Saaru (Menasina Saaru)', cat: 'curry', unit: 'cup', step: 1, cal: 65, p: 3, c: 10, f: 2, fiber: 2.5, liver: 'good', tags: ['veg'] },
+
+  /* ---------------- PALYAS (VEGETABLE STIR-FRIES) ---------------- */
+  { id: 'beetroot_palya',     name: 'Beetroot Palya',        cat: 'veg', unit: 'cup', step: 1, cal: 100, p: 2.5, c: 14, f: 4,   fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'carrot_palya',       name: 'Carrot Palya',          cat: 'veg', unit: 'cup', step: 1, cal: 95,  p: 2,   c: 13, f: 4,   fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'bittergourd_palya',  name: 'Bitter Gourd Palya (Hagalkayi)', cat: 'veg', unit: 'cup', step: 1, cal: 100, p: 3, c: 11, f: 6, fiber: 4.0, liver: 'good', tags: ['highfiber','liverstar'] },
+  { id: 'beans_palya',        name: 'Beans Palya',           cat: 'veg', unit: 'cup', step: 1, cal: 90,  p: 3,   c: 10, f: 4,   fiber: 5.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'cabbage_palya',      name: 'Cabbage Palya',         cat: 'veg', unit: 'cup', step: 1, cal: 80,  p: 2.5, c: 9,  f: 4,   fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'capsicum_palya',     name: 'Capsicum Palya',        cat: 'veg', unit: 'cup', step: 1, cal: 90,  p: 2,   c: 10, f: 5,   fiber: 3.5, liver: 'good', tags: ['highfiber'] },
+  { id: 'potato_palya',       name: 'Potato Palya (Aloo)',   cat: 'veg', unit: 'cup', step: 1, cal: 140, p: 3,   c: 24, f: 4,   fiber: 3.0, liver: 'neutral', tags: ['oil'] },
+  { id: 'gobi_palya',         name: 'Cauliflower Palya',     cat: 'veg', unit: 'cup', step: 1, cal: 90,  p: 3,   c: 10, f: 4,   fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'snakegourd_palya',   name: 'Snake Gourd Palya',     cat: 'veg', unit: 'cup', step: 1, cal: 75,  p: 2,   c: 8,  f: 4,   fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'ridgegourd_palya',   name: 'Ridge Gourd Palya (Heerekayi)', cat: 'veg', unit: 'cup', step: 1, cal: 75, p: 2, c: 8, f: 4, fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'knolkhol_palya',     name: 'Knol Khol Palya',       cat: 'veg', unit: 'cup', step: 1, cal: 80,  p: 3,   c: 10, f: 3.5, fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'clusterbeans_palya', name: 'Cluster Beans Palya (Gorikai)', cat: 'veg', unit: 'cup', step: 1, cal: 100, p: 3.5, c: 12, f: 4, fiber: 6.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'brinjal_palya',      name: 'Brinjal Palya (Badanekayi)', cat: 'veg', unit: 'cup', step: 1, cal: 110, p: 2.5, c: 12, f: 6, fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'spinach_palya',      name: 'Palak Palya',           cat: 'veg', unit: 'cup', step: 1, cal: 80,  p: 4,   c: 8,  f: 4,   fiber: 4.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'tonde_palya',        name: 'Ivy Gourd Palya (Tonde Kayi)', cat: 'veg', unit: 'cup', step: 1, cal: 85, p: 2.5, c: 9, f: 4.5, fiber: 3.5, liver: 'good', tags: ['highfiber'] },
+  { id: 'rawbanana_palya',    name: 'Raw Banana Palya',      cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 2,   c: 24, f: 4,   fiber: 4.0, liver: 'neutral', tags: ['highfiber'] },
+  { id: 'avarekai_palya',     name: 'Avarekai Palya (Field Beans)', cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 7, c: 18, f: 4, fiber: 7.0, liver: 'good', tags: ['highprotein','highfiber'] },
+  { id: 'chowchow_palya',     name: 'Chow Chow Palya',       cat: 'veg', unit: 'cup', step: 1, cal: 75,  p: 2,   c: 9,  f: 4,   fiber: 3.0, liver: 'good', tags: ['highfiber'] },
+  { id: 'sweetcorn_palya',    name: 'Sweet Corn Palya',      cat: 'veg', unit: 'cup', step: 1, cal: 130, p: 4,   c: 22, f: 4,   fiber: 4.0, liver: 'neutral', tags: ['highfiber'] },
+
+  /* ---------------- KANNADA SWEETS / SAVOURY SNACKS ---------------- */
+  { id: 'chakli',       name: 'Chakli',             cat: 'snack', unit: 'piece', step: 1, cal: 90,  p: 1.5, c: 10, f: 5,  fiber: 0.8, liver: 'bad', tags: ['fried'] },
+  { id: 'kodubale',     name: 'Kodubale',           cat: 'snack', unit: 'piece', step: 1, cal: 95,  p: 1.5, c: 11, f: 5,  fiber: 0.8, liver: 'bad', tags: ['fried'] },
+  { id: 'nippattu',     name: 'Nippattu',           cat: 'snack', unit: 'piece', step: 1, cal: 80,  p: 1.5, c: 9,  f: 4.5,fiber: 0.6, liver: 'bad', tags: ['fried'] },
+  { id: 'khara_boondi', name: 'Khara Boondi',       cat: 'snack', unit: '30 g',  step: 1, cal: 160, p: 4,   c: 14, f: 10, fiber: 1.0, liver: 'bad', tags: ['fried'] },
+
   /* ---------------- TREATS / NEGATIVE FOODS ---------------- */
+  { id: 'mysore_pak',  name: 'Mysore Pak',      cat: 'treat', unit: 'piece', step: 1, cal: 180, p: 2, c: 20, f: 11, fiber: 0, liver: 'bad', tags: ['sugary','ghee','treat'] },
+  { id: 'holige',      name: 'Holige (Obbattu)', cat: 'treat', unit: 'piece', step: 1, cal: 200, p: 4, c: 38, f: 4,  fiber: 1.5, liver: 'bad', tags: ['sugary','treat'] },
+  { id: 'chiroti',     name: 'Chiroti',         cat: 'treat', unit: 'piece', step: 1, cal: 150, p: 2, c: 20, f: 7,  fiber: 0.5, liver: 'bad', tags: ['sugary','fried','treat'] },
   { id: 'ice_cream',   name: 'Ice Cream',       cat: 'treat', unit: 'scoop', step: 1, cal: 207, p: 3.5, c: 24, f: 11, fiber: 0.7, liver: 'bad', tags: ['sugary','treat'] },
   { id: 'soft_drink',  name: 'Soft Drink',      cat: 'treat', unit: 'can',   step: 1, cal: 140, p: 0,   c: 39, f: 0,  fiber: 0,   liver: 'bad', tags: ['sugary','treat','soda'] },
   { id: 'cake',        name: 'Cake / Pastry',   cat: 'treat', unit: 'slice', step: 1, cal: 350, p: 4,   c: 50, f: 15, fiber: 1,   liver: 'bad', tags: ['sugary','bakery','treat'] },
@@ -213,27 +308,98 @@ const DAY_DIET = {
   Sunday:    'nonveg',
 };
 
+/* ---------------------------------------------------------------------
+   Serving weights (grams) for units that aren't already gram-based.
+   Lets the UI show e.g. "1 cup ≈ 90 g". Units that embed a number
+   (e.g. "100 g cooked", "30 g", "glass (250ml)") are parsed directly.
+--------------------------------------------------------------------- */
+const SERVING_GRAMS = {
+  // breakfast
+  idli: 35, mini_idli: 15, dosa: 80, masala_dosa: 150, set_dosa: 60, rava_dosa: 90, neer_dosa: 40,
+  poha: 180, upma: 180, pongal: 200, chapati_bf: 45, idiyappam: 50, appam: 60, uttapam: 120,
+  paratha: 70, methi_thepla: 60, ragi_dosa: 80, moong_chilla: 80, sambar: 200, coconut_chut: 15,
+  // protein
+  egg: 50, egg_white: 33, boiled_egg: 50, dal: 200, chana: 165, rajma: 175, curd_skip: 200,
+  // carbs
+  chapati: 45, phulka: 35, white_bread: 30, brown_bread: 30,
+  // vegetables (cooked/standard cup)
+  broccoli: 90, green_peas: 145, spinach: 30, beans: 125, carrot: 128, capsicum: 150, mushroom: 70,
+  mixed_veg: 150, cauliflower: 100, cabbage: 90, bottle_gourd: 116, okra: 100, tomato: 180,
+  cucumber: 120, beetroot: 136, lauki_sabzi: 150,
+  // fruits
+  banana: 118, apple: 182, orange: 130, papaya: 145, guava: 55, pomegranate: 174, berries: 145,
+  watermelon: 152, mango: 165, grapes: 151, pineapple: 165, pear: 178, kiwi: 75, muskmelon: 160,
+  strawberry: 152, chikoo: 90, custard_apple: 160, plum: 66, peach: 150, litchi: 190, dragon_fruit: 200, sweet_lime: 100,
+  // snacks / seeds
+  flaxseed: 10, chia: 12, sesame_seed: 9, makhana: 30, sprouts: 100, dates: 8, dried_figs: 20, prunes: 10,
+  // drinks (ml)
+  black_coffee: 240, coffee: 240, green_tea: 240, tea: 240, buttermilk: 240, lemon_water: 240, coconut_water: 240, protein_shake: 250,
+  // curries (per cup/katori)
+  veg_curry: 200, mixed_veg_curry: 200, veg_korma: 200, paneer_bm: 200, palak_paneer: 200, kadai_paneer: 200,
+  matar_paneer: 200, chole: 200, rajma_curry: 200, dal_tadka: 200, dal_makhani: 200, aloo_gobi: 180,
+  bhindi_masala: 150, baingan_bharta: 180, mushroom_masala: 180, sambar_curry: 200, kofta_curry: 200,
+  soya_curry: 200, chk_curry_c: 200, butter_chicken: 200, chk_tikka_masala: 200, egg_curry: 200,
+  fish_curry: 200, mutton_curry: 200, prawn_curry: 200,
+  // treats
+  ice_cream: 65, soft_drink: 330, cake: 80, samosa: 100, biscuit: 24, fried_snack: 40, gulab_jamun: 40, sweets: 40,
+  // cooking fats
+  ghee: 5, groundnut_oil: 5, olive_oil: 5,
+  // rice & one-pot (cup ≈ 200 g)
+  lemon_rice: 200, puliogare: 200, bisibele: 200, vangi_bath: 200, tomato_rice: 200,
+  coconut_rice: 200, curd_rice: 200, ghee_rice: 200, veg_pulao: 200, shavige: 180,
+  chicken_biryani: 220, egg_rice: 200,
+  // kannada tiffin
+  rava_idli: 40, thatte_idli: 60, khara_bath: 200, kesari_bath: 150, benne_dosa: 80,
+  mysore_dosa: 160, medu_vada: 40, maddur_vada: 35, goli_baje: 25, sabudana_khichdi: 200,
+  // rottis / millet breads
+  ragi_rotti: 80, akki_rotti: 90, jolada_rotti: 60, ragi_mudde: 120, bajra_roti: 60, jowar_upma: 180,
+  // south veg curries / sides
+  rasam: 200, avial: 150, kootu: 180, gojju: 100, huli: 200, majjige_huli: 200, palya: 120, kosambari: 100,
+  // south non-veg
+  chicken_ghee_roast: 180, chicken_sukka: 180, chicken_chettinad: 180, mutton_sukka: 180,
+  prawn_sukka: 150, fish_fry: 100, egg_bhurji: 120,
+  // kannada snacks / sweets
+  chakli: 25, kodubale: 25, nippattu: 25, mysore_pak: 30, holige: 60, chiroti: 40,
+  // shavige & saarus (cup)
+  shavige_upittu: 180, shavige_chitranna: 180,
+  bele_saaru: 200, soppu_saaru: 200, bassaru: 200, tomato_saaru: 200, pepper_saaru: 200,
+  // palyas (cup ≈ 120 g)
+  beetroot_palya: 120, carrot_palya: 120, bittergourd_palya: 120, beans_palya: 120, cabbage_palya: 120,
+  capsicum_palya: 120, potato_palya: 130, gobi_palya: 120, snakegourd_palya: 120, ridgegourd_palya: 120,
+  knolkhol_palya: 120, clusterbeans_palya: 120, brinjal_palya: 120, spinach_palya: 120, tonde_palya: 120,
+  rawbanana_palya: 130, avarekai_palya: 130, chowchow_palya: 120, sweetcorn_palya: 130,
+};
+
+/* grams (or ml) in one serving unit of a food, or null if unknown */
+function unitGrams(f) {
+  const m = f.unit.match(/(\d+)\s*(?:g|ml)/);     // "100 g cooked", "30 g", "glass (250ml)"
+  if (m) return +m[1];
+  return SERVING_GRAMS[f.id] || null;
+}
+function unitIsLiquid(f) { return f.cat === 'drink' || /ml/.test(f.unit); }
+
 /* Helpers exposed globally */
 function getFood(id) { return FOOD_MAP[id]; }
 function foodsByCat(cat) { return FOOD_DB.filter(f => f.cat === cat); }
 
 /* Default breakfast options shown as cards */
-const BREAKFAST_OPTIONS = ['idli','dosa','set_dosa','rava_dosa','neer_dosa','poha','upma','pongal','chapati_bf','brown_bread','oats','ragi_dosa'];
+const BREAKFAST_OPTIONS = ['idli','rava_idli','thatte_idli','dosa','set_dosa','rava_dosa','neer_dosa','benne_dosa','mysore_dosa','ragi_dosa','poha','upma','shavige_upittu','shavige_chitranna','khara_bath','kesari_bath','pongal','medu_vada','maddur_vada','goli_baje','sabudana_khichdi','ragi_rotti','akki_rotti','chapati_bf','brown_bread','oats'];
 const LUNCH_PROTEIN   = ['chicken_br','paneer'];
-const LUNCH_CARB      = ['rice','brown_rice','chapati'];
-const VEG_OPTIONS     = ['broccoli','green_peas','spinach','beans','carrot','capsicum','mushroom','mixed_veg'];
+const LUNCH_CARB      = ['rice','brown_rice','chapati','ragi_rotti','akki_rotti','jolada_rotti','ragi_mudde','bajra_roti','jowar_upma'];
+const RICE_OPTIONS    = ['lemon_rice','puliogare','bisibele','vangi_bath','tomato_rice','coconut_rice','curd_rice','ghee_rice','veg_pulao','shavige','shavige_upittu','shavige_chitranna','chicken_biryani','egg_rice'];
+const VEG_OPTIONS     = ['broccoli','green_peas','spinach','beans','carrot','capsicum','mushroom','mixed_veg','palya','kosambari','beetroot_palya','carrot_palya','bittergourd_palya','beans_palya','cabbage_palya','capsicum_palya','potato_palya','gobi_palya','snakegourd_palya','ridgegourd_palya','knolkhol_palya','clusterbeans_palya','brinjal_palya','spinach_palya','tonde_palya','rawbanana_palya','avarekai_palya','chowchow_palya','sweetcorn_palya'];
 const PROTEIN_VEG     = ['milk','whey','paneer'];
-const PROTEIN_NONVEG  = ['boiled_egg','chicken_br','milk','whey'];
+const PROTEIN_NONVEG  = ['boiled_egg','chicken_br','egg_bhurji','milk','whey'];
 
 /* Curries — split by diet so veg days only show veg curries */
-const CURRY_VEG = ['veg_curry','mixed_veg_curry','veg_korma','paneer_bm','palak_paneer','kadai_paneer','matar_paneer','chole','rajma_curry','dal_tadka','dal_makhani','aloo_gobi','bhindi_masala','baingan_bharta','mushroom_masala','sambar_curry','kofta_curry','soya_curry'];
-const CURRY_NONVEG = ['chk_curry_c','butter_chicken','chk_tikka_masala','egg_curry','fish_curry','mutton_curry','prawn_curry'];
+const CURRY_VEG = ['veg_curry','mixed_veg_curry','veg_korma','paneer_bm','palak_paneer','kadai_paneer','matar_paneer','chole','rajma_curry','dal_tadka','dal_makhani','aloo_gobi','bhindi_masala','baingan_bharta','mushroom_masala','sambar_curry','kofta_curry','soya_curry','rasam','avial','kootu','gojju','huli','majjige_huli','bele_saaru','soppu_saaru','bassaru','tomato_saaru','pepper_saaru'];
+const CURRY_NONVEG = ['chk_curry_c','butter_chicken','chk_tikka_masala','chicken_ghee_roast','chicken_sukka','chicken_chettinad','egg_curry','fish_curry','mutton_curry','mutton_sukka','prawn_curry','prawn_sukka'];
 
 /* Snack builder groups */
 const SNACK_FRUITS = ['banana','apple','orange','papaya','guava','pomegranate','berries','watermelon','grapes','pineapple','pear','kiwi','muskmelon','strawberry','mango','chikoo','custard_apple','plum','peach','litchi','dragon_fruit','sweet_lime'];
 const SNACK_NUTS   = ['walnuts','almonds','cashews','pistachios','peanuts','hazelnuts','brazil_nuts','pecans','mixed_nuts','pumpkin_seed','sunflower_seed','flaxseed','chia','sesame_seed','raisins','dates','dried_figs','dried_apricot','prunes','dried_cranberry'];
 const SNACK_DRINKS = ['black_coffee','coffee','green_tea','tea','buttermilk','lemon_water','coconut_water'];
-const SNACK_OTHER  = ['milk','whey','protein_shake','makhana','sprouts','roasted_chana','dark_choc'];
+const SNACK_OTHER  = ['milk','whey','protein_shake','makhana','sprouts','roasted_chana','dark_choc','chakli','kodubale','nippattu','khara_boondi'];
 /* kept for backward compatibility */
 const SNACK_OPTIONS = SNACK_FRUITS.concat(SNACK_NUTS, SNACK_DRINKS, SNACK_OTHER);
 
@@ -244,6 +410,9 @@ if (typeof window !== 'undefined') {
   window.DAY_DIET = DAY_DIET;
   window.getFood = getFood;
   window.foodsByCat = foodsByCat;
+  window.SERVING_GRAMS = SERVING_GRAMS;
+  window.unitGrams = unitGrams;
+  window.unitIsLiquid = unitIsLiquid;
   window.BREAKFAST_OPTIONS = BREAKFAST_OPTIONS;
   window.LUNCH_PROTEIN = LUNCH_PROTEIN;
   window.LUNCH_CARB = LUNCH_CARB;
@@ -253,6 +422,7 @@ if (typeof window !== 'undefined') {
   window.PROTEIN_NONVEG = PROTEIN_NONVEG;
   window.CURRY_VEG = CURRY_VEG;
   window.CURRY_NONVEG = CURRY_NONVEG;
+  window.RICE_OPTIONS = RICE_OPTIONS;
   window.SNACK_FRUITS = SNACK_FRUITS;
   window.SNACK_NUTS = SNACK_NUTS;
   window.SNACK_DRINKS = SNACK_DRINKS;

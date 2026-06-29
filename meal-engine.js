@@ -35,6 +35,36 @@ const Engine = {
   round(n) { return Math.round(n); },
 
   /* ---------------------------------------------------------------
+     EFFECTIVE TARGETS
+     The profile targets are the GYM-DAY target (the "good" baseline).
+       No gym today  →  −300 kcal  (less carbs/fat, protein held)
+       Football      →  +200 kcal  (refuel carbs + a little protein)
+     Returns adjusted targets plus a `bonus` describing the changes.
+  --------------------------------------------------------------- */
+  effectiveTargets(day, p) {
+    const bonus = { cal: 0, p: 0, c: 0, f: 0, notes: [] };
+    const gym = !!(day.gym && day.gym.done);
+    const fb = !!(day.football && day.football.done);
+
+    if (!gym) {
+      bonus.cal -= 300; bonus.c -= 50; bonus.f -= 11;   // protein held for muscle/liver
+      bonus.notes.push('No gym −300 kcal');
+    }
+    if (fb) {
+      bonus.cal += 200; bonus.c += 45; bonus.p += 5;
+      bonus.notes.push('Football +200 kcal');
+    }
+    return {
+      targetCalories: p.targetCalories + bonus.cal,
+      targetProtein:  p.targetProtein  + bonus.p,
+      targetCarbs:    p.targetCarbs    + bonus.c,
+      targetFat:      p.targetFat      + bonus.f,
+      targetFiber:    p.targetFiber,            // fiber is not activity-driven
+      bonus, gym, fb,
+    };
+  },
+
+  /* ---------------------------------------------------------------
      SMART DINNER GENERATION
      Looks at what's already eaten + remaining targets and proposes
      a dinner that fills the gap while honouring liver-friendly rules.
@@ -42,10 +72,11 @@ const Engine = {
   --------------------------------------------------------------- */
   generateDinner(day, profile, diet) {
     const eaten = this.dayTotals(day, 'dinner');
-    const remCal   = profile.targetCalories - eaten.cal;
-    const remP     = profile.targetProtein  - eaten.p;
-    const remC     = profile.targetCarbs    - eaten.c;
-    const remFiber = profile.targetFiber    - eaten.fiber;
+    const T = this.effectiveTargets(day, profile);
+    const remCal   = T.targetCalories - eaten.cal;
+    const remP     = T.targetProtein  - eaten.p;
+    const remC     = T.targetCarbs    - eaten.c;
+    const remFiber = T.targetFiber    - eaten.fiber;
 
     const items = [];
     const rationale = [];
@@ -119,6 +150,7 @@ const Engine = {
     const add = (label, delta) => { score += delta; breakdown.push({ label, delta }); };
 
     const totals = this.dayTotals(day);
+    const T = this.effectiveTargets(day, profile);
 
     // Positive
     if (day.gym && day.gym.done) add('Gym workout', +10);
@@ -131,8 +163,8 @@ const Engine = {
     if (hasBroccoli) add('Broccoli eaten', +5);
     if (vegCount >= 2) add('Plenty of vegetables', +5);
 
-    if (totals.fiber >= profile.targetFiber) add('Fiber target met', +10);
-    if (totals.p >= profile.targetProtein) add('Protein target met', +10);
+    if (totals.fiber >= T.targetFiber) add('Fiber target met', +10);
+    if (totals.p >= T.targetProtein) add('Protein target met', +10);
     if (day.walkAfterMeals) add('Walked after meals', +5);
 
     // Negative — scan tags
@@ -148,7 +180,7 @@ const Engine = {
     if (tagCounts.sugary) add('Sugary food', -15);
     const gheeQty = allItems.filter(i => i.id === 'ghee').reduce((s, i) => s + i.qty, 0);
     if (gheeQty > 2) add('Too much ghee', -10);
-    if (totals.fiber < profile.targetFiber * 0.4 && totals.cal > 800) add('Very low fiber', -10);
+    if (totals.fiber < T.targetFiber * 0.4 && totals.cal > 800) add('Very low fiber', -10);
 
     // Late heavy dinner
     const dinner = this.mealTotals(day.meals.dinner);
@@ -171,7 +203,7 @@ const Engine = {
     const out = [];
     const totals = this.dayTotals(day);
     const bf = this.mealTotals(day.meals.breakfast);
-    const lunch = this.mealTotals(day.meals.lunch);
+    const T = this.effectiveTargets(day, profile);
 
     // Breakfast carb-heavy
     if (bf.cal > 0 && bf.c > 45 && bf.p < 12) {
@@ -179,23 +211,23 @@ const Engine = {
       out.push({ type: 'warn', text: `Breakfast is high in carbs. Reduce lunch rice by ~${Math.max(50, reduce)} g to balance.` });
     }
     // Protein status
-    if (totals.p >= profile.targetProtein) {
+    if (totals.p >= T.targetProtein) {
       out.push({ type: 'good', text: 'Excellent — protein target already achieved today! 💪' });
-    } else if (totals.p >= profile.targetProtein * 0.7) {
-      out.push({ type: 'info', text: `Protein on track: ${Math.round(totals.p)}/${profile.targetProtein} g. A whey scoop closes the gap.` });
-    } else if (totals.cal > profile.targetCalories * 0.6) {
+    } else if (totals.p >= T.targetProtein * 0.7) {
+      out.push({ type: 'info', text: `Protein on track: ${Math.round(totals.p)}/${T.targetProtein} g. A whey scoop closes the gap.` });
+    } else if (totals.cal > T.targetCalories * 0.6) {
       out.push({ type: 'warn', text: `Protein is lagging (${Math.round(totals.p)} g). Prioritise protein at dinner.` });
     }
     // Calories nearly used
-    if (totals.cal >= profile.targetCalories * 0.85 && totals.cal < profile.targetCalories) {
+    if (totals.cal >= T.targetCalories * 0.85 && totals.cal < T.targetCalories) {
       out.push({ type: 'info', text: 'Calorie budget almost used — dinner can be lighter.' });
-    } else if (totals.cal > profile.targetCalories) {
-      out.push({ type: 'warn', text: `Over calorie budget by ${Math.round(totals.cal - profile.targetCalories)} kcal. Keep dinner protein + veg only.` });
+    } else if (totals.cal > T.targetCalories) {
+      out.push({ type: 'warn', text: `Over calorie budget by ${Math.round(totals.cal - T.targetCalories)} kcal. Keep dinner protein + veg only.` });
     }
     // Fiber
-    if (totals.fiber < profile.targetFiber * 0.6) {
+    if (totals.fiber < T.targetFiber * 0.6) {
       out.push({ type: 'warn', text: 'Fiber is low. Add broccoli or green peas for liver health.' });
-    } else if (totals.fiber >= profile.targetFiber) {
+    } else if (totals.fiber >= T.targetFiber) {
       out.push({ type: 'good', text: 'Great fiber intake — your liver thanks you. 🥦' });
     }
     // Liver negatives
