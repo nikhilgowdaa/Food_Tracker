@@ -1,221 +1,671 @@
-/**
- * Fatty Liver Nutrition Tracker Pro v2.0
- * Architecture: Clean Vanilla JS Lifecycle Management
- */
+/* =====================================================================
+   script.js — App controller / view layer
+   Ties together storage, engine, charts and blood-report modules.
+   ===================================================================== */
 
-// 1. Structural Targets & Profiles
-const targets = { calories: 2000, protein: 140, carbs: 170, fat: 55, fiber: 35, water: 3500 };
+const App = {
+  selectedDate: dateKey(),     // currently viewed date (YYYY-MM-DD)
+  activeView: 'today',
+  activeMeal: 'breakfast',
+  statRange: 'week',
 
-const defaultState = {
-  calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
-  liverScore: 100,
-  loggedActivities: [],
-  loggedFoods: []
-};
+  /* ---------- Init ---------- */
+  init() {
+    this.applyTheme(Storage.getProfile().theme);
+    this.bindChrome();
+    this.renderDayStrip();
+    this.switchView('today');
+    this.refresh();
+    window.addEventListener('resize', () => { if (this.activeView === 'stats') this.renderStats(); });
+  },
 
-let appState = JSON.parse(localStorage.getItem('liver_tracker_state')) || { ...defaultState };
+  get day() { return Storage.getDay(this.selectedDate); },
+  saveDay() { Storage.saveDay(this.selectedDate, this.day); },
 
-// 2. Specialized Database Matrix
-const foodDatabase = {
-  breakfast: [
-    { id: 'idli', name: 'Idli (per piece)', calories: 60, protein: 2, carbs: 13, fat: 0.2, fiber: 1.0, tags: ['veg'] },
-    { id: 'dosa', name: 'Plain Dosa (1 medium)', calories: 135, protein: 3, carbs: 22, fat: 3.5, fiber: 1.2, tags: ['veg'] },
-    { id: 'set_dosa', name: 'Set Dosa (1 serving of 3)', calories: 360, protein: 7.5, carbs: 58, fat: 9, fiber: 3.2, tags: ['veg'] },
-    { id: 'rava_dosa', name: 'Rava Dosa (1 medium)', calories: 180, protein: 4, carbs: 25, fat: 7, fiber: 2.0, tags: ['veg'] },
-    { id: 'poha', name: 'Poha (1 medium bowl)', calories: 180, protein: 3.5, carbs: 35, fat: 2.5, fiber: 2.0, tags: ['veg'] },
-    { id: 'upma', name: 'Upma (1 medium bowl)', calories: 210, protein: 5.0, carbs: 38, fat: 4, fiber: 2.8, tags: ['veg'] },
-    { id: 'oats', name: 'Oats with Milk', calories: 260, protein: 12, carbs: 42, fat: 4.5, fiber: 6.0, tags: ['veg', 'superfood'] },
-    { id: 'brown_bread', name: 'Brown Bread (2 slices)', calories: 150, protein: 6, carbs: 28, fat: 1.6, fiber: 4.0, tags: ['veg'] },
-    { id: 'egg_white', name: 'Egg White (1 large)', calories: 17, protein: 3.6, carbs: 0.2, fat: 0.1, fiber: 0, tags: ['non-veg'] },
-    { id: 'whole_egg', name: 'Whole Boiled Egg', calories: 78, protein: 6.3, carbs: 0.6, fat: 5.3, fiber: 0, tags: ['non-veg'] },
-    { id: 'whey', name: 'Whey Protein (1 scoop)', calories: 110, protein: 25, carbs: 1, fat: 0.5, fiber: 0, tags: ['veg', 'superfood'] }
-  ],
-  lunch: [
-    { id: 'chicken_150', name: 'Chicken Breast (150g)', calories: 247, protein: 46, carbs: 0, fat: 5.4, fiber: 0, tags: ['non-veg'] },
-    { id: 'paneer_100', name: 'Low-Fat Paneer (100g)', calories: 180, protein: 18, carbs: 2, fat: 10, fiber: 0, tags: ['veg'] },
-    { id: 'rice_150', name: 'Cooked Rice (150g)', calories: 195, protein: 4, carbs: 42, fat: 0.4, fiber: 0.6, tags: ['veg'] },
-    { id: 'chapati', name: 'Chapati (1 piece)', calories: 85, protein: 3, carbs: 18, fat: 0.5, fiber: 2.5, tags: ['veg'] },
-    { id: 'broccoli', name: 'Steamed Broccoli (100g)', calories: 35, protein: 2.4, carbs: 7, fat: 0.4, fiber: 3.3, tags: ['veg', 'superfood'] },
-    { id: 'peas', name: 'Green Peas (100g)', calories: 80, protein: 5.4, carbs: 14, fat: 0.4, fiber: 5.1, tags: ['veg', 'superfood'] }
-  ],
-  dinner: [
-    { id: 'chicken_200', name: 'Chicken Breast (200g)', calories: 330, protein: 62, carbs: 0, fat: 7.2, fiber: 0, tags: ['non-veg'] },
-    { id: 'paneer_150', name: 'Low-Fat Paneer (150g)', calories: 270, protein: 27, carbs: 3, fat: 15, fiber: 0, tags: ['veg'] },
-    { id: 'rice_100', name: 'Cooked Rice (100g)', calories: 130, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4, tags: ['veg'] },
-    { id: 'chapati', name: 'Chapati (1 piece)', calories: 85, protein: 3, carbs: 18, fat: 0.5, fiber: 2.5, tags: ['veg'] },
-    { id: 'broccoli_din', name: 'Steamed Broccoli (100g)', calories: 35, protein: 2.4, carbs: 7, fat: 0.4, fiber: 3.3, tags: ['veg', 'superfood'] }
-  ],
-  snacks: [
-    { id: 'banana', name: 'Banana (1 medium)', calories: 105, protein: 1.3, carbs: 27, fat: 0.3, fiber: 3.0, tags: ['veg'] },
-    { id: 'apple', name: 'Apple (1 medium)', calories: 95, protein: 0.5, carbs: 25, fat: 0.3, fiber: 4.4, tags: ['veg', 'superfood'] },
-    { id: 'walnuts', name: 'Walnuts (28g)', calories: 185, protein: 4.3, carbs: 3.9, fat: 18.5, fiber: 1.9, tags: ['veg', 'superfood'] },
-    { id: 'flaxseed', name: 'Ground Flaxseed (1 tbsp)', calories: 37, protein: 1.3, carbs: 2, fat: 3, fiber: 1.9, tags: ['veg', 'superfood'] }
-  ]
-};
+  dietFor(dk) {
+    const d = Storage.getDay(dk);
+    if (d.dietOverride) return d.dietOverride;
+    return DAY_DIET[dayName(new Date(dk + 'T00:00'))];
+  },
+  get diet() { return this.dietFor(this.selectedDate); },
 
-// 3. Smart Recalculation Engine
-function processNutritionCalculations() {
-  const remCarbs = targets.carbs - appState.carbs;
-  const remProtein = targets.protein - appState.protein;
-  const noteBox = document.getElementById('engineNotification');
-  
-  const todayIndex = new Date().getDay();
-  const isVegDay = [1, 5, 6].includes(todayIndex);
+  /* ---------- Chrome / nav ---------- */
+  bindChrome() {
+    document.querySelectorAll('.tab').forEach(t =>
+      t.addEventListener('click', () => this.switchView(t.dataset.view)));
 
-  if (appState.calories === 0) {
-    noteBox.textContent = isVegDay 
-      ? "Today is a Vegetarian Protocol day. Maximize protein via Whey isolate and low-fat paneer starting from breakfast."
-      : "Non-Vegetarian day active. Focus on egg whites and clean chicken portions to manage fat while hitting your muscle target.";
-    return;
-  }
+    document.getElementById('themeToggle').addEventListener('click', () => this.cycleTheme());
 
-  if (remCarbs < 35 && remProtein > 30) {
-    noteBox.textContent = "⚠️ Carb limits reaching capacity. Smart Engine action: Dropping rice suggestions from subsequent meals. Focus fully on high-protein bases and clean fiber.";
-  } else if (remProtein <= 15) {
-    noteBox.textContent = "✅ Premium protein targets achieved for muscle maintenance. Subsequent meals can be adjusted to light configurations.";
-  } else {
-    noteBox.textContent = `Target Balance: You require ${Math.max(0, Math.round(remProtein))}g more protein. Prioritizing lean structural allocations.`;
-  }
-}
+    document.getElementById('modalClose').addEventListener('click', () => this.closeModal());
+    document.getElementById('modalBackdrop').addEventListener('click', () => this.closeModal());
 
-// 4. Liver Score Core Logic
-function evaluateLiverScore() {
-  let initial = 100;
-  
-  appState.loggedActivities.forEach(act => {
-    if (act === 'gym' || act === 'football' || act === 'water') initial += 10;
-    if (act === 'sugar') initial -= 15;
-  });
+    // water buttons
+    document.querySelectorAll('[data-water]').forEach(b =>
+      b.addEventListener('click', () => {
+        const d = this.day;
+        d.water = Math.max(0, d.water + parseInt(b.dataset.water));
+        this.saveDay(); this.refresh();
+      }));
 
-  if (appState.fiber < 15 && appState.calories > 500) initial -= 10;
-  
-  appState.liverScore = Math.min(100, Math.max(0, initial));
-}
-
-// 5. App Core Controllers
-function populateFoodDropdown() {
-  const period = document.getElementById('mealPeriod').value;
-  const selectEl = document.getElementById('foodSelect');
-  selectEl.innerHTML = '';
-
-  const todayIndex = new Date().getDay();
-  const isVegDay = [1, 5, 6].includes(todayIndex);
-
-  foodDatabase[period].forEach(food => {
-    if (isVegDay && food.tags.includes('non-veg')) return; // Filter options on Veg days
-    const opt = document.createElement('option');
-    opt.value = food.id;
-    opt.textContent = food.name;
-    selectEl.appendChild(opt);
-  });
-}
-
-function handleLogFood() {
-  const period = document.getElementById('mealPeriod').value;
-  const foodId = document.getElementById('foodSelect').value;
-  const qty = parseInt(document.getElementById('foodQty').value) || 1;
-  
-  if (!foodId) return;
-
-  const matchItem = foodDatabase[period].find(f => f.id === foodId);
-  
-  appState.calories += (matchItem.calories * qty);
-  appState.protein += (matchItem.protein * qty);
-  appState.carbs += (matchItem.carbs * qty);
-  appState.fat += (matchItem.fat * qty);
-  appState.fiber += (matchItem.fiber * qty);
-  
-  localStorage.setItem('liver_tracker_state', JSON.stringify(appState));
-  
-  triggerToast(`Added ${qty}x ${matchItem.name}`);
-  document.getElementById('foodQty').value = 1; // Reset stepper
-  renderDashboard();
-}
-
-function handleLogActivity(activityType) {
-  appState.loggedActivities.push(activityType);
-  evaluateLiverScore();
-  localStorage.setItem('liver_tracker_state', JSON.stringify(appState));
-  triggerToast(`Logged Habit: ${activityType.toUpperCase()}`);
-  renderDashboard();
-}
-
-// 6. UI Render Layer
-function renderDashboard() {
-  const categories = ['calories', 'protein', 'carbs', 'fat', 'fiber'];
-  
-  categories.forEach(cat => {
-    const valueEl = document.getElementById(`${cat}Value`);
-    const fillEl = document.getElementById(`${cat}Fill`);
-    
-    const current = Math.round(appState[cat]);
-    const target = targets[cat];
-    const unit = cat === 'calories' ? '' : 'g';
-    
-    valueEl.textContent = `${current} / ${target}${unit}`;
-    const pct = Math.min((current / target) * 100, 100);
-    fillEl.style.width = `${pct}%`;
-    
-    if (current > target && cat !== 'protein' && cat !== 'fiber') {
-      fillEl.style.background = 'var(--red)';
-    } else {
-      fillEl.style.background = 'var(--primary-color)';
-    }
-  });
-
-  // Circle Update
-  document.getElementById('liverScoreValue').textContent = appState.liverScore;
-  const circle = document.querySelector('.progress-ring__circle');
-  const dashoffset = 364.4 - (appState.liverScore / 100) * 364.4;
-  circle.style.strokeDashoffset = dashoffset;
-
-  if (appState.liverScore >= 85) circle.style.stroke = 'var(--green)';
-  else if (appState.liverScore >= 65) circle.style.stroke = 'var(--yellow)';
-  else circle.style.stroke = 'var(--red)';
-
-  processNutritionCalculations();
-}
-
-function triggerToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.remove('hidden');
-  setTimeout(() => toast.classList.add('hidden'), 2500);
-}
-
-// 7. Initial Binding
-function bindAppLifecycle() {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const todayIdx = new Date().getDay();
-  document.getElementById('currentDay').textContent = days[todayIdx];
-  
-  const isVegDay = [1, 5, 6].includes(todayIdx);
-  document.getElementById('dietType').textContent = isVegDay ? "Vegetarian Protocol" : "Non-Vegetarian Day";
-
-  // Event Listeners
-  document.getElementById('mealPeriod').addEventListener('change', populateFoodDropdown);
-  document.getElementById('logFoodBtn').addEventListener('click', handleLogFood);
-  
-  document.querySelectorAll('.btn-activity').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      handleLogActivity(e.currentTarget.getAttribute('data-activity'));
+    // activity toggles
+    document.getElementById('gymToggle').addEventListener('change', e => {
+      this.day.gym.done = e.target.checked; this.saveDay(); this.refresh();
     });
-  });
+    document.getElementById('fbToggle').addEventListener('change', e => {
+      this.day.football.done = e.target.checked; this.saveDay(); this.refresh();
+    });
+    document.getElementById('walkToggle').addEventListener('change', e => {
+      this.day.walkAfterMeals = e.target.checked; this.saveDay(); this.refresh();
+    });
 
-  // Stepper Controller Setup
-  document.getElementById('stepUp').addEventListener('click', () => {
-    const input = document.getElementById('foodQty');
-    if (input.value < 10) input.value = parseInt(input.value) + 1;
-  });
-  document.getElementById('stepDown').addEventListener('click', () => {
-    const input = document.getElementById('foodQty');
-    if (input.value > 1) input.value = parseInt(input.value) - 1;
-  });
+    document.getElementById('scoreWhy').addEventListener('click', () => this.showScoreBreakdown());
+    document.getElementById('dietOverride').addEventListener('click', () => this.toggleDietOverride());
+  },
 
-  // Init Data Display
-  populateFoodDropdown();
-  evaluateLiverScore();
-  renderDashboard();
-}
+  switchView(v) {
+    this.activeView = v;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+    document.querySelectorAll('.view').forEach(s => s.hidden = (s.id !== 'view-' + v));
+    const titles = { today: 'Today', log: 'Log Meals', stats: 'Analytics', blood: 'Blood Report', more: 'More' };
+    document.getElementById('viewTitle').textContent = titles[v];
+    document.getElementById('main').scrollTop = 0;
+    if (v === 'log') this.renderLog();
+    if (v === 'stats') this.renderStats();
+    if (v === 'blood') this.renderBlood();
+    if (v === 'more') this.renderMore();
+    if (v === 'today') this.refresh();
+  },
 
-window.addEventListener('DOMContentLoaded', bindAppLifecycle);
+  /* ---------- Theme ---------- */
+  applyTheme(theme) {
+    if (theme === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', theme);
+  },
+  cycleTheme() {
+    const order = ['auto', 'light', 'dark'];
+    const cur = Storage.getProfile().theme || 'auto';
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    Storage.setProfile({ theme: next });
+    this.applyTheme(next);
+    this.toast('Theme: ' + next);
+    if (this.activeView === 'today') this.refresh();
+    if (this.activeView === 'stats') this.renderStats();
+  },
+
+  /* ---------- Day strip ---------- */
+  renderDayStrip() {
+    const strip = document.getElementById('dayStrip');
+    strip.innerHTML = '';
+    // show 7 days ending today
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today); d.setDate(today.getDate() - i);
+      const dk = dateKey(d);
+      const pill = document.createElement('button');
+      pill.className = 'day-pill' + (dk === this.selectedDate ? ' active' : '');
+      pill.innerHTML = `<span>${d.getDate()}</span><span class="dn">${dayName(d).slice(0,3)}</span>`;
+      pill.addEventListener('click', () => { this.selectedDate = dk; this.renderDayStrip(); this.refresh(); });
+      strip.appendChild(pill);
+    }
+  },
+
+  toggleDietOverride() {
+    const d = this.day;
+    const base = DAY_DIET[dayName(new Date(this.selectedDate + 'T00:00'))];
+    const cur = d.dietOverride || base;
+    d.dietOverride = (cur === 'veg') ? 'nonveg' : 'veg';
+    if (d.dietOverride === base) d.dietOverride = null; // back to default
+    this.saveDay();
+    this.toast('Diet: ' + this.diet);
+    this.refresh();
+    if (this.activeView === 'log') this.renderLog();
+  },
+
+  /* ===================================================================
+     DASHBOARD / TODAY
+     =================================================================== */
+  refresh() {
+    const p = Storage.getProfile();
+    const d = this.day;
+    const sd = new Date(this.selectedDate + 'T00:00');
+    document.getElementById('dateLabel').textContent =
+      sd.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+    // diet badge
+    const badge = document.getElementById('dietBadge');
+    badge.textContent = this.diet === 'veg' ? '🥗 Vegetarian Day' : '🍗 Non-Veg Day';
+    badge.className = 'diet-badge ' + this.diet;
+
+    // score ring
+    const { score } = Engine.liverScore(d, p);
+    const color = ({ green: '#34c759', yellow: '#ff9f0a', red: '#ff3b30' })[Engine.scoreColor(score)];
+    Charts.ring(document.getElementById('scoreRing'), score, 100, color, String(score), '/ 100');
+    document.getElementById('scoreVerdict').textContent =
+      score >= 80 ? 'Liver-friendly day. Keep it up!' :
+      score >= 55 ? 'Decent — a few tweaks will boost it.' :
+                    'Needs attention. Check the breakdown.';
+
+    // macros
+    const totals = Engine.dayTotals(d);
+    this.renderMacros(totals, p);
+
+    // water
+    const wpct = Math.min(100, d.water / p.waterGoal * 100);
+    const wfill = document.getElementById('waterFill');
+    wfill.style.width = wpct + '%';
+    wfill.className = 'progress-fill' + (d.water >= p.waterGoal ? ' met' : '');
+    document.getElementById('waterLabel').textContent = `${d.water} / ${p.waterGoal} ml`;
+
+    // activity
+    document.getElementById('gymToggle').checked = d.gym.done;
+    document.getElementById('fbToggle').checked = d.football.done;
+    document.getElementById('walkToggle').checked = d.walkAfterMeals;
+    document.getElementById('gymSub').textContent = p.gymTiming ? 'Usual: ' + p.gymTiming : '';
+    document.getElementById('fbSub').textContent = p.footballTiming ? 'Usual: ' + p.footballTiming : '';
+    this.renderSeg('gymDuration', [30, 45, 60, 90, 120].map(v => ({ label: v + 'm', val: v })),
+      d.gym.duration, v => { d.gym.duration = v; this.saveDay(); });
+    this.renderSeg('fbTime', [{ label: '9 PM', val: '21:00' }, { label: '10 PM', val: '22:00' }],
+      d.football.time, v => { d.football.time = v; this.saveDay(); });
+
+    // coaching
+    this.renderCoach(Engine.suggestions(d, p));
+  },
+
+  renderMacros(t, p) {
+    const grid = document.getElementById('macroGrid');
+    const items = [
+      { name: 'Calories', cur: t.cal, tgt: p.targetCalories, u: 'kcal', c: '#0a84ff' },
+      { name: 'Protein', cur: t.p, tgt: p.targetProtein, u: 'g', c: '#34c759' },
+      { name: 'Carbs', cur: t.c, tgt: p.targetCarbs, u: 'g', c: '#ff9f0a' },
+      { name: 'Fat', cur: t.f, tgt: p.targetFat, u: 'g', c: '#ff375f' },
+      { name: 'Fiber', cur: t.fiber, tgt: p.targetFiber, u: 'g', c: '#30d158' },
+    ];
+    grid.innerHTML = items.map(m => {
+      const pct = Math.min(100, m.cur / m.tgt * 100);
+      const cls = m.cur > m.tgt * 1.05 ? 'over' : (m.cur >= m.tgt ? 'met' : '');
+      return `<div class="macro glass">
+        <div class="m-top"><span class="m-name">${m.name}</span></div>
+        <div class="m-val">${Math.round(m.cur)} <small>/ ${m.tgt} ${m.u}</small></div>
+        <div class="progress"><div class="progress-fill ${cls}" style="width:${pct}%;${cls ? '' : 'background:' + m.c}"></div></div>
+      </div>`;
+    }).join('');
+  },
+
+  renderCoach(list) {
+    const host = document.getElementById('coachList');
+    if (!list.length) { host.innerHTML = ''; return; }
+    const ic = { good: '✅', warn: '⚠️', info: '💡' };
+    host.innerHTML = '<div class="section-title">Coach</div>' + list.map(s =>
+      `<div class="coach ${s.type}"><span class="ic">${ic[s.type]}</span><span>${s.text}</span></div>`).join('');
+  },
+
+  renderSeg(id, options, current, onPick) {
+    const el = document.getElementById(id);
+    el.innerHTML = options.map(o =>
+      `<button data-val="${o.val}" class="${String(o.val) === String(current) ? 'active' : ''}">${o.label}</button>`).join('');
+    el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      onPick(isNaN(b.dataset.val) ? b.dataset.val : +b.dataset.val);
+      el.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+      this.refresh();
+    }));
+  },
+
+  showScoreBreakdown() {
+    const { score, breakdown } = Engine.liverScore(this.day, Storage.getProfile());
+    const rows = breakdown.length ? breakdown.map(b =>
+      `<div class="breakdown-item"><span>${b.label}</span><span class="${b.delta >= 0 ? 'pos' : 'neg'}">${b.delta >= 0 ? '+' : ''}${b.delta}</span></div>`).join('')
+      : '<p class="empty-note">Log meals & activity to see scoring.</p>';
+    this.openModal(`Liver Score · ${score}/100`,
+      `<p class="hint">Starts at 100. Liver-friendly actions add points; processed/sugary/fried foods subtract.</p>${rows}`);
+  },
+
+  /* ===================================================================
+     LOG / MEAL BUILDERS
+     =================================================================== */
+  renderLog() {
+    const meals = [
+      { id: 'breakfast', label: 'Breakfast' },
+      { id: 'protein', label: 'Protein' },
+      { id: 'lunch', label: 'Lunch' },
+      { id: 'snacks', label: 'Snacks' },
+      { id: 'dinner', label: 'Dinner' },
+    ];
+    const seg = document.getElementById('mealSeg');
+    seg.innerHTML = meals.map(m =>
+      `<button data-meal="${m.id}" class="${m.id === this.activeMeal ? 'active' : ''}">${m.label}</button>`).join('');
+    seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      this.activeMeal = b.dataset.meal; this.renderLog();
+    }));
+    const area = document.getElementById('builderArea');
+    if (this.activeMeal === 'dinner') area.innerHTML = '', this.renderDinner(area);
+    else this.renderBuilder(area, this.activeMeal);
+  },
+
+  /* Generic builder for a meal slot using option lists */
+  renderBuilder(area, slot) {
+    let groups = [];
+    if (slot === 'breakfast') {
+      groups = [{ title: 'Breakfast', ids: BREAKFAST_OPTIONS, rec: { idli: 2, dosa: 2, oats: 1 } }];
+    } else if (slot === 'protein') {
+      const ids = this.diet === 'veg' ? PROTEIN_VEG : PROTEIN_NONVEG;
+      groups = [{ title: this.diet === 'veg' ? 'Vegetarian Protein' : 'Non-Veg Protein', ids }];
+    } else if (slot === 'lunch') {
+      const protIds = this.diet === 'veg' ? ['paneer'] : ['chicken_br', 'paneer'];
+      groups = [
+        { title: 'Protein', ids: protIds },
+        { title: 'Carbs', ids: LUNCH_CARB },
+        { title: 'Vegetables', ids: VEG_OPTIONS },
+      ];
+    } else if (slot === 'snacks') {
+      const ids = SNACK_OPTIONS.filter(id => !(this.diet === 'veg' && false)); // all allowed
+      groups = [{ title: 'Evening Snacks', ids }];
+    }
+
+    const day = this.day;
+    const selMap = {};
+    (day.meals[slot] || []).forEach(i => selMap[i.id] = i.qty);
+
+    let html = '';
+    groups.forEach(g => {
+      html += `<div class="section-title">${g.title}</div><div class="food-grid">`;
+      g.ids.forEach(id => {
+        const f = getFood(id); if (!f) return;
+        const sel = selMap[id];
+        const rec = g.rec && g.rec[id];
+        const isUnitCount = ['piece','egg','slice','medium','cup','glass','scoop (30g)','tbsp','tsp','can','3 pcs','20 g','30 g','50 g dry','bowl (40g)'].includes(f.unit) || true;
+        html += `<div class="food-card ${sel ? 'selected' : ''}" data-id="${id}" data-slot="${slot}">
+          <span class="liver-dot ${f.liver}"></span>
+          <div class="fc-name">${f.name}</div>
+          <div class="fc-macros">${Math.round(f.cal)} kcal · P ${f.p} · C ${f.c} · F ${f.f}<br>Fiber ${f.fiber} · per ${f.unit}</div>
+          ${rec ? `<div class="fc-rec">Recommended: ${rec}</div>` : ''}
+          <div class="qty-row" data-qtyrow="${id}">${this.qtyButtons(f, sel)}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    // summary
+    const t = Engine.mealTotals(day.meals[slot]);
+    html += `<div class="sel-summary">This meal: ${Math.round(t.cal)} kcal · ${Math.round(t.p)}g protein · ${Math.round(t.c)}g carbs · ${Math.round(t.fiber)}g fiber</div>`;
+
+    area.innerHTML = html;
+    area.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = btn.closest('[data-qtyrow]').dataset.qtyrow;
+        const qty = +btn.dataset.qty;
+        this.setMealItem(slot, id, qty);
+        this.renderBuilder(area, slot);
+      });
+    });
+  },
+
+  qtyButtons(f, current) {
+    // quantity options scaled by step
+    const opts = [];
+    if (['rice','brown_rice','chicken_br','grilled_chk','paneer','jeera_rice'].includes(f.id)) {
+      // gram-based: show g multiples
+      const base = f.id.includes('chicken') ? [1,1.5,2,2.5] : (f.id === 'paneer' ? [0.5,1,1.5,2] : [1,1.5,2,2.5]);
+      base.forEach(q => opts.push({ q, label: Math.round(q*100)+'g' }));
+    } else {
+      [1,2,3,4].forEach(q => opts.push({ q, label: String(q) }));
+    }
+    let h = `<button class="qty-btn ${!current ? '' : ''}" data-qty="0" ${!current?'style="opacity:.5"':''}>0</button>`;
+    h = '';
+    opts.forEach(o => {
+      h += `<button class="qty-btn ${current === o.q ? 'on' : ''}" data-qty="${o.q}">${o.label}</button>`;
+    });
+    return h;
+  },
+
+  setMealItem(slot, id, qty) {
+    const day = this.day;
+    const arr = day.meals[slot];
+    const idx = arr.findIndex(i => i.id === id);
+    if (qty <= 0) { if (idx >= 0) arr.splice(idx, 1); }
+    else if (idx >= 0) arr[idx].qty = qty;
+    else arr.push({ id, qty });
+    this.saveDay();
+    this.toast(getFood(id).name + (qty > 0 ? ' updated' : ' removed'));
+  },
+
+  renderDinner(area) {
+    const p = Storage.getProfile();
+    const day = this.day;
+    const { items, rationale } = Engine.generateDinner(day, p, this.diet);
+    const t = Engine.mealTotals(items);
+    const eaten = Engine.dayTotals(day, 'dinner');
+    const logged = day.meals.dinner.length > 0;
+
+    area.innerHTML = `
+      <p class="hint">Auto-generated from your breakfast, lunch, snacks, remaining targets, and tonight's gym/football.</p>
+      <div class="dinner-card">
+        <div class="row-between"><strong>Suggested Dinner</strong><span class="diet-badge ${this.diet}">${this.diet === 'veg' ? 'Veg' : 'Non-Veg'}</span></div>
+        <div style="margin-top:10px">
+          ${items.map(i => { const f = getFood(i.id); return `<div class="dinner-item"><span>${f.name}</span><span>${this.qtyLabel(f, i.qty)}</span></div>`; }).join('')}
+        </div>
+        <div class="dinner-item" style="font-weight:800"><span>Dinner total</span><span>${Math.round(t.cal)} kcal · ${Math.round(t.p)}g P</span></div>
+        <ul class="rationale">${rationale.map(r => `<li>${r}</li>`).join('')}</ul>
+        <button class="btn" id="acceptDinner" style="margin-top:14px">${logged ? 'Replace logged dinner' : 'Accept this dinner'}</button>
+        ${logged ? '<button class="btn secondary" id="clearDinner" style="margin-top:8px">Clear dinner</button>' : ''}
+      </div>
+      <div class="sel-summary">After accepting: total day ≈ ${Math.round(eaten.cal + t.cal)} kcal · ${Math.round(eaten.p + t.p)}g protein · ${Math.round(eaten.fiber + t.fiber)}g fiber</div>
+    `;
+    area.querySelector('#acceptDinner').addEventListener('click', () => {
+      day.meals.dinner = items.map(i => ({ ...i }));
+      this.saveDay(); this.toast('Dinner logged ✓'); this.renderDinner(area);
+    });
+    const clr = area.querySelector('#clearDinner');
+    if (clr) clr.addEventListener('click', () => { day.meals.dinner = []; this.saveDay(); this.renderDinner(area); });
+  },
+
+  qtyLabel(f, qty) {
+    if (['chicken_br','grilled_chk','paneer','rice','brown_rice'].includes(f.id)) return Math.round(qty*100)+' g';
+    return qty + ' × ' + f.unit;
+  },
+
+  /* ===================================================================
+     STATS / ANALYTICS
+     =================================================================== */
+  renderStats() {
+    const seg = document.getElementById('statRange');
+    seg.innerHTML = [['week','Weekly'],['month','Monthly']].map(([v,l]) =>
+      `<button data-r="${v}" class="${this.statRange===v?'active':''}">${l}</button>`).join('');
+    seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { this.statRange = b.dataset.r; this.renderStats(); }));
+
+    const n = this.statRange === 'week' ? 7 : 30;
+    const today = new Date();
+    const keys = [];
+    for (let i = n - 1; i >= 0; i--) { const d = new Date(today); d.setDate(today.getDate() - i); keys.push(dateKey(d)); }
+    const p = Storage.getProfile();
+    const lbls = keys.map(k => { const d = new Date(k + 'T00:00'); return this.statRange === 'week' ? dayName(d).slice(0,2) : String(d.getDate()); });
+
+    const seriesOf = fn => keys.map(k => fn(Storage.getDay(k)));
+    const cal = seriesOf(d => Math.round(Engine.dayTotals(d).cal));
+    const prot = seriesOf(d => Math.round(Engine.dayTotals(d).p));
+    const fiber = seriesOf(d => Math.round(Engine.dayTotals(d).fiber));
+    const water = seriesOf(d => d.water);
+    const score = seriesOf(d => Engine.liverScore(d, p).score);
+    const gymCount = keys.filter(k => Storage.getDay(k).gym.done).length;
+    const fbCount = keys.filter(k => Storage.getDay(k).football.done).length;
+
+    // averages (only days with data)
+    const loggedKeys = keys.filter(k => Engine.dayTotals(Storage.getDay(k)).cal > 0);
+    const avg = arrFn => { const vals = loggedKeys.map(k => arrFn(Storage.getDay(k))); return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; };
+
+    const area = document.getElementById('statsArea');
+    area.innerHTML = `
+      <div class="stat-card">
+        <h3>Averages (${loggedKeys.length} logged days)</h3>
+        <div class="avg-grid">
+          <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).cal)}</div><div class="al">kcal</div></div>
+          <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).p)}</div><div class="al">protein g</div></div>
+          <div class="avg-box"><div class="av">${avg(d=>Engine.dayTotals(d).fiber)}</div><div class="al">fiber g</div></div>
+          <div class="avg-box"><div class="av">${avg(d=>d.water)}</div><div class="al">water ml</div></div>
+          <div class="avg-box"><div class="av">${avg(d=>Engine.liverScore(d,p).score)}</div><div class="al">liver score</div></div>
+          <div class="avg-box"><div class="av">${gymCount}/${fbCount}</div><div class="al">gym / football</div></div>
+        </div>
+      </div>
+      <div class="stat-card"><h3>Liver Score</h3><div class="stat-sub">Target ≥ 80</div><canvas id="cScore" height="160"></canvas></div>
+      <div class="stat-card"><h3>Calories</h3><div class="stat-sub">Target ${p.targetCalories} kcal</div><canvas id="cCal" height="160"></canvas></div>
+      <div class="stat-card"><h3>Protein & Fiber</h3><div class="stat-sub">Protein (green) · Fiber (orange)</div><canvas id="cPF" height="160"></canvas></div>
+      <div class="stat-card"><h3>Water</h3><div class="stat-sub">Goal ${p.waterGoal} ml</div><canvas id="cWater" height="150"></canvas></div>
+      ${this.weightWaistMarkup()}
+    `;
+    Charts.line(document.getElementById('cScore'), lbls, [{ data: score, color: '#34c759' }], { min: 0, max: 100 });
+    Charts.line(document.getElementById('cCal'), lbls, [{ data: cal, color: '#0a84ff' }]);
+    Charts.line(document.getElementById('cPF'), lbls, [{ data: prot, color: '#34c759' }, { data: fiber, color: '#ff9f0a' }], { min: 0 });
+    Charts.bar(document.getElementById('cWater'), lbls, water, '#0a84ff', { max: p.waterGoal * 1.2 });
+    this.drawWeightWaist();
+  },
+
+  weightWaistMarkup() {
+    const blood = Storage.getBlood();
+    if (blood.length < 1) return '';
+    return `<div class="stat-card"><h3>Weight & Waist</h3><div class="stat-sub">From blood reports · Weight (blue) · Waist (purple)</div><canvas id="cWW" height="160"></canvas></div>`;
+  },
+  drawWeightWaist() {
+    const el = document.getElementById('cWW'); if (!el) return;
+    const blood = Storage.getBlood();
+    const lbls = blood.map(b => { const d = new Date(b.date); return (d.getMonth()+1)+'/'+d.getDate(); });
+    Charts.line(el, lbls, [
+      { data: blood.map(b => b.weight != null && b.weight !== '' ? +b.weight : null), color: '#0a84ff' },
+      { data: blood.map(b => b.waist != null && b.waist !== '' ? +b.waist : null), color: '#5e5ce6' },
+    ]);
+  },
+
+  /* ===================================================================
+     BLOOD REPORT
+     =================================================================== */
+  renderBlood() {
+    const entries = Storage.getBlood();
+    const area = document.getElementById('bloodArea');
+    const latest = entries[entries.length - 1];
+
+    let markersHtml = BLOOD_MARKERS.map(m => {
+      const val = latest ? latest[m.key] : null;
+      const status = BloodReport.status(m, val);
+      const imp = BloodReport.improvement(entries, m);
+      let impHtml = '';
+      if (imp) {
+        const improved = imp.pct > 0;
+        impHtml = `<div class="bm-imp ${improved ? 'up' : 'down'}">${improved ? '▼ improved' : '▲ worse'} ${Math.abs(imp.pct)}%</div>`;
+      }
+      return `<div class="blood-marker">
+        <div class="bm-left"><div class="bm-name">${m.label}</div><div class="bm-ref">Ref: ${m.ref} ${m.unit}</div></div>
+        <div class="bm-right"><div class="bm-val">${val != null && val !== '' ? val : '—'} <span class="status-pill ${status}"></span></div>${impHtml}</div>
+      </div>`;
+    }).join('');
+
+    area.innerHTML = `
+      <button class="btn" id="addBlood">＋ Add Blood Report</button>
+      <div class="hint">${entries.length ? `Latest report: ${latest.date}. Improvement is first → latest reading.` : 'No reports yet. Add your first to start tracking trends.'}</div>
+      <div class="list-card">${markersHtml}</div>
+      ${entries.length ? `<div class="section-title">History (${entries.length})</div>` : ''}
+      <div id="bloodHistory">${entries.slice().reverse().map((e, ri) => {
+        const realIdx = entries.length - 1 - ri;
+        return `<div class="list-card"><div class="row-between"><div class="lc-title">${e.date}</div>
+          <button class="mini-btn chip" data-del="${realIdx}">Delete</button></div>
+          <div class="bm-ref" style="padding-bottom:12px">${BLOOD_MARKERS.filter(m=>e[m.key]!=null&&e[m.key]!=='').map(m=>`${m.label}: ${e[m.key]}`).join(' · ') || 'No values'}</div></div>`;
+      }).join('')}</div>
+    `;
+    area.querySelector('#addBlood').addEventListener('click', () => this.openBloodForm());
+    area.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+      Storage.deleteBlood(+b.dataset.del); this.renderBlood(); this.toast('Report deleted');
+    }));
+  },
+
+  openBloodForm() {
+    const fields = [{ key: 'date', label: 'Date', type: 'date' }].concat(
+      BLOOD_MARKERS.map(m => ({ key: m.key, label: `${m.label} (${m.unit})`, type: 'number' })));
+    const today = dateKey();
+    const body = `<form id="bloodForm">
+      ${fields.map(f => `<div class="field"><label>${f.label}</label>
+        <input name="${f.key}" type="${f.type}" ${f.key === 'date' ? `value="${today}"` : 'inputmode="decimal" step="any"'} ${f.key==='date'?'required':''} /></div>`).join('')}
+      <button class="btn" type="submit">Save Report</button>
+    </form>`;
+    this.openModal('New Blood Report', body);
+    document.getElementById('bloodForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const entry = {};
+      fields.forEach(f => { const v = fd.get(f.key); entry[f.key] = (f.type === 'number' && v !== '') ? +v : v; });
+      Storage.addBlood(entry);
+      this.closeModal(); this.renderBlood(); this.toast('Report saved ✓');
+    });
+  },
+
+  /* ===================================================================
+     MORE — profile, shopping, calendar, export
+     =================================================================== */
+  renderMore() {
+    const area = document.getElementById('moreArea');
+    area.innerHTML = `
+      <div class="seg" id="moreSeg">
+        <button data-m="profile" class="active">Profile</button>
+        <button data-m="shop">Shopping</button>
+        <button data-m="calendar">Calendar</button>
+        <button data-m="data">Data</button>
+      </div>
+      <div id="morePane"></div>`;
+    const seg = area.querySelector('#moreSeg');
+    seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+      this.renderMorePane(b.dataset.m);
+    }));
+    this.renderMorePane('profile');
+  },
+
+  renderMorePane(which) {
+    const pane = document.getElementById('morePane');
+    if (which === 'profile') return this.renderProfile(pane);
+    if (which === 'shop') return this.renderShopping(pane);
+    if (which === 'calendar') return this.renderCalendar(pane);
+    if (which === 'data') return this.renderData(pane);
+  },
+
+  renderProfile(pane) {
+    const p = Storage.getProfile();
+    const f = (k, label, type = 'number', extra = '') =>
+      `<div class="field"><label>${label}</label><input name="${k}" type="${type}" value="${p[k] ?? ''}" ${extra}/></div>`;
+    pane.innerHTML = `<form id="profileForm" class="list-card" style="padding:18px">
+      <div class="field-row">${f('weight','Weight (kg)')}${f('height','Height (cm)')}</div>
+      <div class="field-row">${f('age','Age')}
+        <div class="field"><label>Gender</label><select name="gender"><option ${p.gender==='male'?'selected':''}>male</option><option ${p.gender==='female'?'selected':''}>female</option></select></div></div>
+      <div class="section-title">Daily Targets</div>
+      <div class="field-row">${f('targetCalories','Calories')}${f('targetProtein','Protein (g)')}</div>
+      <div class="field-row">${f('targetCarbs','Carbs (g)')}${f('targetFat','Fat (g)')}</div>
+      <div class="field-row">${f('targetFiber','Fiber (g)')}${f('waterGoal','Water (ml)')}</div>
+      <div class="section-title">Schedule</div>
+      <div class="field-row">${f('gymTiming','Gym timing','text')}${f('footballTiming','Football timing','text')}</div>
+      <div class="field-row">${f('wakeTime','Wake-up','time')}${f('sleepTime','Sleep','time')}</div>
+      <button class="btn" type="submit">Save Profile</button>
+    </form>`;
+    pane.querySelector('#profileForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const patch = {};
+      ['weight','height','age','targetCalories','targetProtein','targetCarbs','targetFat','targetFiber','waterGoal']
+        .forEach(k => patch[k] = +fd.get(k));
+      ['gender','gymTiming','footballTiming','wakeTime','sleepTime'].forEach(k => patch[k] = fd.get(k));
+      Storage.setProfile(patch);
+      this.toast('Profile saved ✓');
+    });
+  },
+
+  renderShopping(pane) {
+    const list = Engine.shoppingList(Storage.allDays());
+    pane.innerHTML = `<p class="hint">Auto-estimated weekly groceries, scaled from your last 7 logged days.</p>
+      <div class="list-card">${list.length ? list.map(i =>
+        `<div class="shop-item"><span>${i.name}</span><span class="amt">${i.amount} ${i.unit}</span></div>`).join('')
+        : '<p class="empty-note">Log a few meals to generate your shopping list.</p>'}</div>`;
+  },
+
+  renderCalendar(pane) {
+    const now = new Date(this.selectedDate + 'T00:00');
+    const year = now.getFullYear(), month = now.getMonth();
+    const first = new Date(year, month, 1);
+    const startDow = first.getDay();
+    const days = new Date(year, month + 1, 0).getDate();
+    const p = Storage.getProfile();
+    const dow = ['S','M','T','W','T','F','S'];
+    let cells = dow.map(d => `<div class="cal-dow">${d}</div>`).join('');
+    for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
+    const todayK = dateKey();
+    for (let d = 1; d <= days; d++) {
+      const dk = dateKey(new Date(year, month, d));
+      const day = Storage.getDay(dk);
+      const hasData = Engine.dayTotals(day).cal > 0 || day.water > 0;
+      const cls = hasData ? Engine.scoreColor(Engine.liverScore(day, p).score) : '';
+      cells += `<div class="cal-cell ${cls} ${dk===todayK?'today':''}" data-dk="${dk}">${d}</div>`;
+    }
+    const monthName = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    pane.innerHTML = `<div class="list-card" style="padding:18px">
+      <div class="row-between" style="margin-bottom:14px"><button class="chip" id="calPrev">‹</button><strong>${monthName}</strong><button class="chip" id="calNext">›</button></div>
+      <div class="cal-grid">${cells}</div>
+      <p class="hint" style="margin-top:14px">🟢 ≥80 · 🟡 55–79 · 🔴 &lt;55 liver score. Tap a day to view it.</p></div>`;
+    pane.querySelector('#calPrev').addEventListener('click', () => { this.selectedDate = dateKey(new Date(year, month - 1, 1)); this.renderCalendar(pane); });
+    pane.querySelector('#calNext').addEventListener('click', () => { this.selectedDate = dateKey(new Date(year, month + 1, 1)); this.renderCalendar(pane); });
+    pane.querySelectorAll('[data-dk]').forEach(c => c.addEventListener('click', () => this.showDaySummary(c.dataset.dk)));
+  },
+
+  showDaySummary(dk) {
+    const day = Storage.getDay(dk);
+    const p = Storage.getProfile();
+    const t = Engine.dayTotals(day);
+    const { score } = Engine.liverScore(day, p);
+    const mealHtml = Object.entries(day.meals).map(([slot, items]) => {
+      if (!items.length) return '';
+      return `<div class="breakdown-item"><strong style="text-transform:capitalize">${slot}</strong><span>${items.map(i => getFood(i.id)?.name + '×' + i.qty).join(', ')}</span></div>`;
+    }).join('') || '<p class="empty-note">No meals logged.</p>';
+    this.openModal(new Date(dk+'T00:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}),
+      `<div class="breakdown-item"><span>Liver Score</span><strong>${score}/100</strong></div>
+       <div class="breakdown-item"><span>Calories</span><strong>${Math.round(t.cal)} kcal</strong></div>
+       <div class="breakdown-item"><span>Protein / Fiber</span><strong>${Math.round(t.p)}g / ${Math.round(t.fiber)}g</strong></div>
+       <div class="breakdown-item"><span>Water</span><strong>${day.water} ml</strong></div>
+       <div class="breakdown-item"><span>Gym / Football</span><strong>${day.gym.done?'✓':'—'} / ${day.football.done?'✓':'—'}</strong></div>
+       <div class="section-title">Meals</div>${mealHtml}
+       <button class="btn" id="goToDay" style="margin-top:14px">Open this day</button>`);
+    document.getElementById('goToDay').addEventListener('click', () => {
+      this.selectedDate = dk; this.closeModal(); this.renderDayStrip(); this.switchView('today');
+    });
+  },
+
+  renderData(pane) {
+    pane.innerHTML = `<p class="hint">All data is stored locally on this device. Export regularly to back up.</p>
+      <div class="list-card" style="padding:18px">
+        <button class="btn" id="exportBtn">⬇︎ Export Backup (JSON)</button>
+        <button class="btn secondary" id="importBtn" style="margin-top:10px">⬆︎ Import Backup</button>
+        <input type="file" id="importFile" accept="application/json" hidden />
+        <button class="btn danger" id="resetBtn" style="margin-top:10px">Reset All Data</button>
+      </div>
+      <div class="hint">Future features: barcode scanner, food search, voice logging, AI coach, recipe ideas, meal reminders, cloud sync, Apple Health, CSV export, multiple profiles.</div>`;
+    pane.querySelector('#exportBtn').addEventListener('click', () => {
+      const blob = new Blob([Storage.exportJSON()], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `liver-tracker-backup-${dateKey()}.json`;
+      a.click(); URL.revokeObjectURL(a.href);
+      this.toast('Backup exported ✓');
+    });
+    const fileInput = pane.querySelector('#importFile');
+    pane.querySelector('#importBtn').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try { Storage.importJSON(reader.result); this.toast('Backup restored ✓'); this.renderDayStrip(); this.refresh(); this.renderMore(); }
+        catch (err) { this.toast('Invalid backup file'); }
+      };
+      reader.readAsText(file);
+    });
+    pane.querySelector('#resetBtn').addEventListener('click', () => {
+      this.openModal('Reset everything?', `<p class="hint">This permanently deletes all meals, profile and blood reports on this device. This cannot be undone.</p>
+        <button class="btn danger" id="confirmReset">Yes, delete everything</button>
+        <button class="btn secondary" id="cancelReset" style="margin-top:8px">Cancel</button>`);
+      document.getElementById('confirmReset').addEventListener('click', () => {
+        Storage.resetAll(); this.closeModal(); this.selectedDate = dateKey();
+        this.renderDayStrip(); this.refresh(); this.renderMore(); this.toast('All data reset');
+      });
+      document.getElementById('cancelReset').addEventListener('click', () => this.closeModal());
+    });
+  },
+
+  /* ---------- Modal & toast ---------- */
+  openModal(title, bodyHtml) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = bodyHtml;
+    document.getElementById('modalHost').hidden = false;
+  },
+  closeModal() { document.getElementById('modalHost').hidden = true; },
+
+  _toastTimer: null,
+  toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+  },
+};
+
+document.addEventListener('DOMContentLoaded', () => App.init());

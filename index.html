@@ -1,141 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Liver Tracker Pro</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Liver Pro" />
+  <meta name="description" content="Intelligent nutrition planner to reverse fatty liver, lower LDL and build muscle." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icon-180.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Fatty Liver Tracker Pro</title>
 </head>
 <body>
-  <div class="app-container">
-    
-    <!-- Header Area with Circular Liver Score -->
-    <header class="dashboard-header glass">
-      <div class="header-main">
-        <h1>Dashboard</h1>
-        <div class="protocol-badge" id="dietType">Non-Vegetarian</div>
-      </div>
-      
-      <div class="score-row">
-        <div class="liver-score-container">
-          <svg class="progress-ring" width="140" height="140">
-            <circle class="progress-ring__bg" stroke-width="10" fill="transparent" r="58" cx="70" cy="70"/>
-            <circle class="progress-ring__circle" stroke-width="10" fill="transparent" r="58" cx="70" cy="70"/>
-          </svg>
-          <div class="score-text">
-            <span id="liverScoreValue">100</span>
-            <span class="score-label">Liver Score</span>
-          </div>
-        </div>
-        <div class="day-info">
-          <h2 id="currentDay">Today</h2>
-          <p class="subtitle">Smart Nutrition Engine Active</p>
+  <!-- App shell -->
+  <div id="app">
+
+    <!-- ===== Top bar ===== -->
+    <header class="topbar glass">
+      <div class="topbar-inner">
+        <h1 id="viewTitle">Today</h1>
+        <div class="topbar-right">
+          <span id="dateLabel" class="date-label"></span>
+          <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">◐</button>
         </div>
       </div>
     </header>
 
-    <!-- Smart Nutrition Engine Insights -->
-    <section class="smart-engine">
-      <div class="glass card notification-card">
-        <div class="icon">💡</div>
-        <div class="notification-text" id="engineNotification">
-          Loading smart macro recommendations...
-        </div>
-      </div>
-    </section>
+    <!-- ===== Scroll area / views ===== -->
+    <main id="main">
 
-    <!-- Target Progress Cards -->
-    <section class="macros-grid">
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Calories</span>
-          <span id="caloriesValue" class="bold">0 / 2000</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="caloriesFill"></div></div>
-      </div>
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Protein</span>
-          <span id="proteinValue" class="bold">0 / 140g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="proteinFill"></div></div>
-      </div>
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Carbs</span>
-          <span id="carbsValue" class="bold">0 / 170g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="carbsFill"></div></div>
-      </div>
-      <div class="glass macro-card">
-        <div class="macro-header">
-          <span>Fat</span>
-          <span id="fatValue" class="bold">0 / 55g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="fatFill"></div></div>
-      </div>
-      <div class="glass macro-card full-width">
-        <div class="macro-header">
-          <span>Dietary Fiber</span>
-          <span id="fiberValue" class="bold">0 / 35g</span>
-        </div>
-        <div class="progress-bar"><div class="fill" id="fiberFill"></div></div>
-      </div>
-    </section>
-
-    <!-- Activity Log -->
-    <section class="activities">
-      <h2 class="section-title">Habits & Trackers</h2>
-      <div class="activities-grid">
-        <button class="glass btn-activity" data-activity="gym">🏋️ Gym (+10)</button>
-        <button class="glass btn-activity" data-activity="football">⚽ Football (+10)</button>
-        <button class="glass btn-activity" data-activity="water">💧 Water (+10)</button>
-        <button class="glass btn-activity danger" data-activity="sugar">🍩 Sugar/Bakery (-15)</button>
-      </div>
-    </section>
-
-    <!-- Intelligent Meal Loggers -->
-    <section class="meal-builders">
-      <h2 class="section-title">Log Your Intake</h2>
-      
-      <div class="glass card meal-card">
-        <h3>Meal Selection</h3>
-        <p class="subtitle">Build meals starting from breakfast to recalculate targets</p>
-        
-        <div class="input-group">
-          <label for="mealPeriod">Select Meal Timing</label>
-          <select id="mealPeriod" class="apple-select">
-            <option value="breakfast">Breakfast Builder</option>
-            <option value="lunch">Lunch Options</option>
-            <option value="dinner">Dinner Configuration</option>
-            <option value="snacks">Evening Snacks & Seeds</option>
-          </select>
+      <!-- ============ TODAY / DASHBOARD ============ -->
+      <section class="view" id="view-today">
+        <!-- Day selector -->
+        <div class="day-strip" id="dayStrip"></div>
+        <div class="diet-badge-row">
+          <span id="dietBadge" class="diet-badge"></span>
+          <button id="dietOverride" class="mini-btn">Override</button>
         </div>
 
-        <div class="input-group">
-          <label for="foodSelect">Select Food Item</label>
-          <select id="foodSelect" class="apple-select">
-            <!-- Dynamic Injection via JavaScript -->
-          </select>
-        </div>
-        
-        <div class="quantity-row">
-          <label for="foodQty">Serving Multiplier</label>
-          <div class="stepper">
-            <button type="button" id="stepDown" class="step-btn">−</button>
-            <input type="number" id="foodQty" class="apple-input" value="1" min="1" max="10" readonly>
-            <button type="button" id="stepUp" class="step-btn">+</button>
+        <!-- Liver score ring -->
+        <div class="card glass score-card">
+          <canvas id="scoreRing" class="score-ring" height="200"></canvas>
+          <div class="score-meta">
+            <h2>Liver Score</h2>
+            <p id="scoreVerdict" class="score-verdict"></p>
+            <button id="scoreWhy" class="mini-btn">Why?</button>
           </div>
         </div>
 
-        <button class="btn-primary" id="logFoodBtn">Log Entry</button>
-      </div>
-    </section>
+        <!-- Macro cards -->
+        <div class="macro-grid" id="macroGrid"></div>
 
+        <!-- Water tracker -->
+        <div class="card glass water-card">
+          <div class="water-head">
+            <span>💧 Water</span>
+            <span id="waterLabel"></span>
+          </div>
+          <div class="progress"><div class="progress-fill" id="waterFill"></div></div>
+          <div class="water-btns">
+            <button class="chip" data-water="250">+250</button>
+            <button class="chip" data-water="500">+500</button>
+            <button class="chip" data-water="-250">−250</button>
+          </div>
+        </div>
+
+        <!-- Activity toggles -->
+        <div class="card glass">
+          <div class="row-between toggle-row">
+            <div><div class="row-title">💪 Gym Today</div><div class="row-sub" id="gymSub"></div></div>
+            <label class="switch"><input type="checkbox" id="gymToggle"><span class="slider"></span></label>
+          </div>
+          <div class="seg" id="gymDuration"></div>
+          <hr class="divider" />
+          <div class="row-between toggle-row">
+            <div><div class="row-title">⚽ Football Today</div><div class="row-sub" id="fbSub"></div></div>
+            <label class="switch"><input type="checkbox" id="fbToggle"><span class="slider"></span></label>
+          </div>
+          <div class="seg" id="fbTime"></div>
+          <hr class="divider" />
+          <div class="row-between toggle-row">
+            <div><div class="row-title">🚶 Walked after meals</div></div>
+            <label class="switch"><input type="checkbox" id="walkToggle"><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <!-- Coaching notifications -->
+        <div id="coachList"></div>
+      </section>
+
+      <!-- ============ LOG / MEAL BUILDERS ============ -->
+      <section class="view" id="view-log" hidden>
+        <div class="seg meal-seg" id="mealSeg"></div>
+        <div id="builderArea"></div>
+      </section>
+
+      <!-- ============ STATS / ANALYTICS ============ -->
+      <section class="view" id="view-stats" hidden>
+        <div class="seg" id="statRange"></div>
+        <div id="statsArea"></div>
+      </section>
+
+      <!-- ============ BLOOD ============ -->
+      <section class="view" id="view-blood" hidden>
+        <div id="bloodArea"></div>
+      </section>
+
+      <!-- ============ MORE ============ -->
+      <section class="view" id="view-more" hidden>
+        <div id="moreArea"></div>
+      </section>
+
+    </main>
+
+    <!-- ===== Bottom tab bar ===== -->
+    <nav class="tabbar glass" id="tabbar">
+      <button class="tab active" data-view="today"><span class="tab-ic">🏠</span><span>Today</span></button>
+      <button class="tab" data-view="log"><span class="tab-ic">🍽️</span><span>Log</span></button>
+      <button class="tab" data-view="stats"><span class="tab-ic">📈</span><span>Stats</span></button>
+      <button class="tab" data-view="blood"><span class="tab-ic">🩸</span><span>Blood</span></button>
+      <button class="tab" data-view="more"><span class="tab-ic">⚙️</span><span>More</span></button>
+    </nav>
   </div>
-  <div id="toast" class="toast hidden">Item Logged Successfully!</div>
+
+  <!-- Modal host -->
+  <div id="modalHost" class="modal-host" hidden>
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal glass" id="modalCard">
+      <div class="modal-head">
+        <h3 id="modalTitle"></h3>
+        <button class="icon-btn" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Scripts (order matters: data → storage → engine → charts → blood → app) -->
+  <script src="nutrition-data.js"></script>
+  <script src="storage.js"></script>
+  <script src="meal-engine.js"></script>
+  <script src="charts.js"></script>
+  <script src="blood-report.js"></script>
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
-<script src="script.js"></script>
 </html>
