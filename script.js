@@ -300,10 +300,12 @@ const App = {
         : ['chicken_br', 'grilled_chk', 'chicken_kebab', 'paneer', 'boiled_egg', 'egg_bhurji', 'fish', 'fish_fry'];
       const curryIds = this.diet === 'veg' ? CURRY_VEG : CURRY_VEG.concat(CURRY_NONVEG);
       const riceIds = this.diet === 'veg' ? RICE_OPTIONS.filter(id => !(getFood(id).tags || []).includes('nonveg')) : RICE_OPTIONS;
+      const chineseIds = this.diet === 'veg' ? CHINESE_VEG : CHINESE_VEG.concat(CHINESE_NONVEG);
       return [
         { title: 'Protein', ids: protIds },
         { title: 'Curries', ids: curryIds },
         { title: 'Rice & One-pot', ids: riceIds },
+        { title: 'Indo-Chinese', ids: chineseIds },
         { title: 'Carbs & Rottis', ids: LUNCH_CARB },
         { title: 'Vegetables', ids: VEG_OPTIONS },
       ];
@@ -332,6 +334,8 @@ const App = {
       rava_idli: 3, thatte_idli: 2, benne_dosa: 2, mysore_dosa: 1, medu_vada: 2, maddur_vada: 2,
       goli_baje: 3, ragi_rotti: 2, akki_rotti: 2, jolada_rotti: 2, ragi_mudde: 1, bajra_roti: 2,
       fish_fry: 1, egg_bhurji: 1, chiroti: 1, mysore_pak: 1, holige: 1, chakli: 2, kodubale: 2, nippattu: 2,
+      // indo-chinese
+      veg_spring_roll: 2,
     };
     if (map[f.id] != null) return map[f.id];
     if (f.cat === 'fat') return 2;

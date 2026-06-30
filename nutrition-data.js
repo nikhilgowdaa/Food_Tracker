@@ -288,6 +288,36 @@ const FOOD_DB = [
   { id: 'nippattu',     name: 'Nippattu',           cat: 'snack', unit: 'piece', step: 1, cal: 80,  p: 1.5, c: 9,  f: 4.5,fiber: 0.6, liver: 'bad', tags: ['fried'] },
   { id: 'khara_boondi', name: 'Khara Boondi',       cat: 'snack', unit: '30 g',  step: 1, cal: 160, p: 4,   c: 14, f: 10, fiber: 1.0, liver: 'bad', tags: ['fried'] },
 
+  /* ---------------- INDO-CHINESE ---------------- */
+  /* Fried rice & noodles */
+  { id: 'veg_fried_rice',     name: 'Veg Fried Rice',       cat: 'rice', unit: 'cup', step: 1, cal: 250, p: 6,  c: 40, f: 8,  fiber: 3.0, liver: 'neutral', tags: ['oil','veg'] },
+  { id: 'veg_noodles',        name: 'Veg Hakka Noodles',    cat: 'rice', unit: 'cup', step: 1, cal: 270, p: 7,  c: 42, f: 9,  fiber: 3.0, liver: 'neutral', tags: ['oil','veg'] },
+  { id: 'schezwan_rice',      name: 'Schezwan Fried Rice',  cat: 'rice', unit: 'cup', step: 1, cal: 280, p: 6,  c: 42, f: 10, fiber: 3.0, liver: 'neutral', tags: ['oil','veg'] },
+  { id: 'paneer_fried_rice',  name: 'Paneer Fried Rice',    cat: 'rice', unit: 'cup', step: 1, cal: 300, p: 12, c: 40, f: 11, fiber: 3.0, liver: 'neutral', tags: ['veg','highprotein'] },
+  { id: 'chicken_fried_rice', name: 'Chicken Fried Rice',   cat: 'rice', unit: 'cup', step: 1, cal: 300, p: 15, c: 40, f: 10, fiber: 2.5, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'chicken_noodles',    name: 'Chicken Noodles',      cat: 'rice', unit: 'cup', step: 1, cal: 310, p: 16, c: 42, f: 10, fiber: 2.5, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'egg_fried_rice',     name: 'Egg Fried Rice',       cat: 'rice', unit: 'cup', step: 1, cal: 290, p: 11, c: 40, f: 10, fiber: 2.5, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'egg_noodles',        name: 'Egg Noodles',          cat: 'rice', unit: 'cup', step: 1, cal: 300, p: 12, c: 42, f: 10, fiber: 2.5, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  /* Manchurian / chilli — vegetarian */
+  { id: 'gobi_manchurian',    name: 'Gobi Manchurian',      cat: 'curry', unit: 'cup', step: 1, cal: 220, p: 5,  c: 28, f: 10, fiber: 3.0, liver: 'neutral', tags: ['veg','fried','oil'] },
+  { id: 'veg_manchurian',     name: 'Veg Manchurian',       cat: 'curry', unit: 'cup', step: 1, cal: 210, p: 5,  c: 26, f: 9,  fiber: 4.0, liver: 'neutral', tags: ['veg','oil'] },
+  { id: 'paneer_manchurian',  name: 'Paneer Manchurian',    cat: 'curry', unit: 'cup', step: 1, cal: 280, p: 14, c: 20, f: 16, fiber: 2.0, liver: 'neutral', tags: ['veg','highprotein'] },
+  { id: 'chilli_paneer',      name: 'Chilli Paneer',        cat: 'curry', unit: 'cup', step: 1, cal: 300, p: 15, c: 14, f: 20, fiber: 2.0, liver: 'neutral', tags: ['veg','highprotein'] },
+  { id: 'chilli_gobi',        name: 'Chilli Gobi',          cat: 'curry', unit: 'cup', step: 1, cal: 200, p: 4,  c: 24, f: 9,  fiber: 3.0, liver: 'neutral', tags: ['veg','oil'] },
+  { id: 'chilli_mushroom',    name: 'Chilli Mushroom',      cat: 'curry', unit: 'cup', step: 1, cal: 180, p: 6,  c: 16, f: 10, fiber: 3.0, liver: 'neutral', tags: ['veg'] },
+  { id: 'gobi_65',            name: 'Gobi 65',              cat: 'curry', unit: 'cup', step: 1, cal: 230, p: 5,  c: 26, f: 11, fiber: 3.0, liver: 'bad',     tags: ['veg','fried'] },
+  { id: 'veg_spring_roll',    name: 'Veg Spring Roll',      cat: 'snack', unit: 'piece', step: 1, cal: 120, p: 2, c: 14, f: 6, fiber: 1.5, liver: 'bad',  tags: ['fried'] },
+  /* Manchurian / chilli — non-vegetarian */
+  { id: 'chilli_chicken',     name: 'Chilli Chicken',       cat: 'curry', unit: 'cup', step: 1, cal: 290, p: 24, c: 14, f: 15, fiber: 2.0, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'chicken_manchurian', name: 'Chicken Manchurian',   cat: 'curry', unit: 'cup', step: 1, cal: 280, p: 22, c: 18, f: 13, fiber: 2.0, liver: 'neutral', tags: ['nonveg','highprotein'] },
+  { id: 'chicken_65',         name: 'Chicken 65',           cat: 'curry', unit: 'cup', step: 1, cal: 270, p: 24, c: 10, f: 15, fiber: 1.0, liver: 'neutral', tags: ['nonveg','highprotein','fried'] },
+  { id: 'chilli_fish',        name: 'Chilli Fish',          cat: 'curry', unit: 'cup', step: 1, cal: 250, p: 22, c: 12, f: 12, fiber: 1.5, liver: 'good',    tags: ['nonveg','highprotein'] },
+  /* Soups */
+  { id: 'veg_manchow_soup',   name: 'Veg Manchow Soup',     cat: 'curry', unit: 'cup', step: 1, cal: 110, p: 3,  c: 16, f: 4,  fiber: 2.0, liver: 'neutral', tags: ['veg'] },
+  { id: 'sweetcorn_soup',     name: 'Sweet Corn Soup',      cat: 'curry', unit: 'cup', step: 1, cal: 100, p: 3,  c: 18, f: 2,  fiber: 2.0, liver: 'good',    tags: ['veg'] },
+  { id: 'hot_sour_soup',      name: 'Hot & Sour Soup',      cat: 'curry', unit: 'cup', step: 1, cal: 90,  p: 3,  c: 14, f: 3,  fiber: 2.0, liver: 'good',    tags: ['veg'] },
+  { id: 'chicken_soup',       name: 'Chicken Clear Soup',   cat: 'curry', unit: 'cup', step: 1, cal: 90,  p: 9,  c: 6,  f: 3,  fiber: 1.0, liver: 'good',    tags: ['nonveg','highprotein'] },
+
   /* ---------------- TREATS / NEGATIVE FOODS ---------------- */
   { id: 'mysore_pak',  name: 'Mysore Pak',      cat: 'treat', unit: 'piece', step: 1, cal: 180, p: 2, c: 20, f: 11, fiber: 0, liver: 'bad', tags: ['sugary','ghee','treat'] },
   { id: 'holige',      name: 'Holige (Obbattu)', cat: 'treat', unit: 'piece', step: 1, cal: 200, p: 4, c: 38, f: 4,  fiber: 1.5, liver: 'bad', tags: ['sugary','treat'] },
@@ -384,6 +414,13 @@ const SERVING_GRAMS = {
   kumbalakayi_palya: 120, pumpkin_palya: 120, sorekayi_palya: 120, okra_palya: 120, radish_palya: 120,
   yam_palya: 130, sweetpotato_palya: 130, colocasia_palya: 130, methi_palya: 120, dantu_palya: 120,
   sprouts_palya: 130, greenpeas_palya: 130, mixedveg_palya: 120,
+  // indo-chinese (fried rice/noodles cup ≈ 200 g, gravies ≈ 150 g, soups ≈ 240 ml)
+  veg_fried_rice: 200, veg_noodles: 200, schezwan_rice: 200, paneer_fried_rice: 200,
+  chicken_fried_rice: 200, chicken_noodles: 200, egg_fried_rice: 200, egg_noodles: 200,
+  gobi_manchurian: 150, veg_manchurian: 150, paneer_manchurian: 150, chilli_paneer: 150,
+  chilli_gobi: 150, chilli_mushroom: 150, gobi_65: 150, veg_spring_roll: 60,
+  chilli_chicken: 150, chicken_manchurian: 150, chicken_65: 150, chilli_fish: 150,
+  veg_manchow_soup: 240, sweetcorn_soup: 240, hot_sour_soup: 240, chicken_soup: 240,
 };
 
 /* grams (or ml) in one serving unit of a food, or null if unknown */
@@ -410,6 +447,10 @@ const PROTEIN_NONVEG  = ['boiled_egg','chicken_br','egg_bhurji','milk','whey'];
 /* Curries — split by diet so veg days only show veg curries */
 const CURRY_VEG = ['veg_curry','mixed_veg_curry','veg_korma','paneer_bm','palak_paneer','kadai_paneer','matar_paneer','chole','rajma_curry','dal_tadka','dal_makhani','aloo_gobi','bhindi_masala','baingan_bharta','mushroom_masala','sambar_curry','kofta_curry','soya_curry','rasam','avial','kootu','gojju','huli','majjige_huli','bele_saaru','soppu_saaru','bassaru','tomato_saaru','pepper_saaru'];
 const CURRY_NONVEG = ['chk_curry_c','butter_chicken','chk_tikka_masala','chicken_ghee_roast','chicken_sukka','chicken_chettinad','egg_curry','fish_curry','mutton_curry','mutton_sukka','prawn_curry','prawn_sukka'];
+
+/* Indo-Chinese — split by diet */
+const CHINESE_VEG = ['veg_fried_rice','veg_noodles','schezwan_rice','paneer_fried_rice','gobi_manchurian','veg_manchurian','paneer_manchurian','chilli_paneer','chilli_gobi','chilli_mushroom','gobi_65','veg_manchow_soup','sweetcorn_soup','hot_sour_soup','veg_spring_roll'];
+const CHINESE_NONVEG = ['chicken_fried_rice','chicken_noodles','egg_fried_rice','egg_noodles','chilli_chicken','chicken_manchurian','chicken_65','chilli_fish','chicken_soup'];
 
 /* Snack builder groups */
 const SNACK_FRUITS = ['banana','apple','orange','papaya','guava','pomegranate','berries','watermelon','grapes','pineapple','pear','kiwi','muskmelon','strawberry','mango','chikoo','custard_apple','plum','peach','litchi','dragon_fruit','sweet_lime'];
@@ -439,6 +480,8 @@ if (typeof window !== 'undefined') {
   window.CURRY_VEG = CURRY_VEG;
   window.CURRY_NONVEG = CURRY_NONVEG;
   window.RICE_OPTIONS = RICE_OPTIONS;
+  window.CHINESE_VEG = CHINESE_VEG;
+  window.CHINESE_NONVEG = CHINESE_NONVEG;
   window.SNACK_FRUITS = SNACK_FRUITS;
   window.SNACK_NUTS = SNACK_NUTS;
   window.SNACK_DRINKS = SNACK_DRINKS;
